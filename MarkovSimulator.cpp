@@ -1,8 +1,14 @@
 #include <iostream>
-#include <map>
 #include <utility>
+#include <vector>
+#include "StateValues.h"
+#include "Transitions.cpp"
 
-std::map<std::string, int> states;
+double beta = 2;
+double gamma = 1;
+
+state_values states;
+std::vector<Transition> transitions;
 
 double t = 0;
 
@@ -12,9 +18,14 @@ void setup() {
   states["S"] = 99;
   states["I"] = 1;
   states["R"] = 5;
+
+  TransitionMassAction transitionSI;
+  transitionSI.setStates("S","I");
+  transitionSI.setRate(beta);
+  transitions.push_back(transitionSI);
 }
 
-void serialise(int pT, std::map<std::string, int> pStates) {
+void serialise(int pT, state_values pStates) {
   std::cout << pT;
 
   std::map<std::string,int>::iterator it;
@@ -28,15 +39,14 @@ void serialise(int pT, std::map<std::string, int> pStates) {
 int main() {
   setup();
   std::cout << "t";
-  for(std::map<std::string,int>::iterator it=states.begin(); it != states.end(); it++) {
+  for(state_values::iterator it=states.begin(); it != states.end(); it++) {
     std::cout << "," << it->first;
   }
   std::cout << "\n";
 
   serialise(t, states);
 
-  while (t < T_MAX) {
+  std::cout << transitions[0].getActualRate(states);
 
-  }
   return 0;
 }
