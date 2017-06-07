@@ -15,13 +15,16 @@ double t = 0;
 
 const double T_MAX = 1000; //Arbitrary really
 
-void setup() {
+void setupSIR() {
   states["S"] = 99;
   states["I"] = 1;
   states["R"] = 0;
 
   Transition transitionSI = Transition("S", "I", beta/population_size, 1);
   transitions.push_back(transitionSI);
+
+  Transition transitionIR = Transition("I","R", gamma, 0);
+  transitions.push_back(transitionIR);
 }
 
 void serialise(int pT, state_values pStates) {
@@ -36,7 +39,7 @@ void serialise(int pT, state_values pStates) {
 }
 
 int main() {
-  setup();
+  setupSIR();
   std::cout << "t";
   for(state_values::iterator it=states.begin(); it != states.end(); it++) {
     std::cout << "," << it->first;
