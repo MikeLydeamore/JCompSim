@@ -1,12 +1,13 @@
 #include <iostream>
 #include <utility>
 #include <vector>
+#include <assert.h>
 #include "StateValues.h"
 #include "Transitions.cpp"
 
 double beta = 2;
 double gamma = 1;
-double population_size = 100;
+int population_size = 100;
 
 state_values states;
 std::vector<Transition> transitions;
@@ -48,7 +49,14 @@ int main() {
 
   serialise(t, states);
 
-  
+  while (t < T_MAX) {
+    int actual_size = 0;
+    for (state_values::iterator it = states.begin(); it != states.end(); it++) {
+      actual_size += it->second;
+    }
+    assert(actual_size != population_size)
+
+  }
 
   return 0;
 }
