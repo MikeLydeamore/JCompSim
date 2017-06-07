@@ -6,6 +6,7 @@
 
 double beta = 2;
 double gamma = 1;
+double population_size = 100;
 
 state_values states;
 std::vector<Transition> transitions;
@@ -17,11 +18,9 @@ const double T_MAX = 1000; //Arbitrary really
 void setup() {
   states["S"] = 99;
   states["I"] = 1;
-  states["R"] = 5;
+  states["R"] = 0;
 
-  TransitionMassAction transitionSI;
-  transitionSI.setStates("S","I");
-  transitionSI.setRate(beta);
+  Transition transitionSI = Transition("S", "I", beta/population_size, 1);
   transitions.push_back(transitionSI);
 }
 
@@ -46,7 +45,7 @@ int main() {
 
   serialise(t, states);
 
-  std::cout << transitions[0].getActualRate(states);
+  
 
   return 0;
 }

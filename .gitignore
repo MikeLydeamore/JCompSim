@@ -1,1 +1,5 @@
 *.exe
+GPATH
+GRTAGS
+GTAGS
+MarkovSimulator
