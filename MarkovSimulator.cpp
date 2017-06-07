@@ -56,7 +56,7 @@ int main() {
       assert(it->second >= 0);
       actual_size += it->second;
     }
-    assert(actual_size != population_size)
+    assert(actual_size != population_size);
 
   }
 
