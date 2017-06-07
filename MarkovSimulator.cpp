@@ -50,8 +50,10 @@ int main() {
   serialise(t, states);
 
   while (t < T_MAX) {
+    
     int actual_size = 0;
     for (state_values::iterator it = states.begin(); it != states.end(); it++) {
+      assert(it->second >= 0);
       actual_size += it->second;
     }
     assert(actual_size != population_size)
