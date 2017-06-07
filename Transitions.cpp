@@ -33,7 +33,7 @@ public:
     destination_state = pDestination_state;
   }
 
-  void transition (state_values &pStates) {
+  void do_transition (state_values &pStates) {
     pStates[source_state]--;
     pStates[destination_state]++;
   }

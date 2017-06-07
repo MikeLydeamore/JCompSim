@@ -2,11 +2,14 @@
 #include <utility>
 #include <vector>
 #include <assert.h>
+#include <math.h>
+#include <random>
+#include <numeric>
 #include "StateValues.h"
 #include "Transitions.cpp"
 
-double beta = 2;
-double gamma = 1;
+double mBeta = 2;
+double mGamma = 1;
 int population_size = 100;
 
 state_values states;
@@ -21,14 +24,14 @@ void setupSIR() {
   states["I"] = 1;
   states["R"] = 0;
 
-  Transition transitionSI = Transition("S", "I", beta/population_size, 1);
+  Transition transitionSI = Transition("S", "I", mBeta/(population_size-1), 1);
   transitions.push_back(transitionSI);
 
-  Transition transitionIR = Transition("I","R", gamma, 0);
+  Transition transitionIR = Transition("I","R", mGamma, 0);
   transitions.push_back(transitionIR);
 }
 
-void serialise(int pT, state_values pStates) {
+void serialise(double pT, state_values pStates) {
   std::cout << pT;
 
   std::map<std::string,int>::iterator it;
@@ -41,6 +44,11 @@ void serialise(int pT, state_values pStates) {
 
 int main() {
   setupSIR();
+
+  std::random_device rd;
+  std::default_random_engine generator(rd());
+  std::uniform_real_distribution<double> mRand(0.0, 1.0);
+
   std::cout << "t";
   for(state_values::iterator it=states.begin(); it != states.end(); it++) {
     std::cout << "," << it->first;
@@ -56,7 +64,36 @@ int main() {
       assert(it->second >= 0);
       actual_size += it->second;
     }
-    assert(actual_size != population_size);
+    assert(actual_size == population_size);
+
+    std::vector<double> rates(transitions.size());
+    for (int i = 0 ; i < transitions.size() ; i++) {
+      rates[i] = transitions[i].getActualRate(states);
+    }
+    double rates_sum = std::accumulate(rates.begin(), rates.end(), (double) 0.0);
+    
+    double event_time = -(1.0/rates_sum) * log(mRand(generator));
+    if (isinf(event_time)) {
+      return 0;
+    }
+    t += event_time;
+
+    std::vector<double> rates_normalised(rates.size());
+    rates_normalised[0] = rates[0] / rates_sum;
+
+    for (int i = 1 ; i < rates.size() ; i++) {
+      rates_normalised[i] = rates_normalised[i-1] + (rates[i] / rates_sum);
+    }
+
+    int eventOccurred = 0;
+    double u = mRand(generator);
+    
+    while (u > rates_normalised[eventOccurred]) {
+      eventOccurred++;
+    }
+    transitions[eventOccurred].do_transition(states);
+
+    serialise(t, states);
 
   }
 
