@@ -36,6 +36,17 @@ void setupSIR() {
   transitions.push_back(transitionIR);
 }
 
+void setupCoupledModel(){
+  //Index 1: GAS
+  //Index 2: Scabies
+
+  int initial_infected_gas = 100;
+  int initial_infected_scabies = 100;
+  states["SS"] = population_size - initial_infected_gas - initial_infected_scabies;
+  states["SI"] = 0.5*initial_infected_scabies;
+  states["IS"] = initial_infected - 0.5*initial_infected_gas;
+  states["II"] = initial_infected - 0.5*initial_infected_scabies;
+}
 void serialise(double pT, state_values pStates) {
   std::cout << pT;
 
@@ -47,9 +58,20 @@ void serialise(double pT, state_values pStates) {
   std::cout << "\n";
 }
 
-int main() {
-  setupSIR();
+unsigned long mix(unsigned long a, unsigned long b, unsigned long c) {
+    a=a-b;  a=a-c;  a=a^(c >> 13);
+    b=b-c;  b=b-a;  b=b^(a << 8);
+    c=c-a;  c=c-b;  c=c^(b >> 13);
+    a=a-b;  a=a-c;  a=a^(c >> 12);
+    b=b-c;  b=b-a;  b=b^(a << 16);
+    c=c-a;  c=c-b;  c=c^(b >> 5);
+    a=a-b;  a=a-c;  a=a^(c >> 3);
+    b=b-c;  b=b-a;  b=b^(a << 10);
+    c=c-a;  c=c-b;  c=c^(b >> 15);
+    return c;
+}
 
+void simulateChain() {
   typedef boost::uniform_real<> NumberDistribution; 
   typedef boost::mt19937 RandomNumberGenerator; 
   typedef boost::variate_generator<RandomNumberGenerator&, 
@@ -58,7 +80,8 @@ int main() {
   NumberDistribution distribution(0, 1); 
   RandomNumberGenerator generator; 
   Generator runif(generator, distribution); 
-  generator.seed(std::time(0)); // seed with the current time 
+  unsigned long seed = mix(clock(), time(NULL), getpid());
+  generator.seed(seed); // seed with the current time 
 
   std::cout << "t";
   for(state_values::iterator it=states.begin(); it != states.end(); it++) {
@@ -85,7 +108,7 @@ int main() {
     
     double event_time = -(1.0/rates_sum) * log(runif());
     if (isinf(event_time)) {
-      return 0;
+      return;
     }
     t += event_time;
 
@@ -107,6 +130,12 @@ int main() {
     serialise(t, states);
 
   }
+}
+
+int main() {
+  //setupSIR();
+  setupCoupledModel();
+  simulateChain();
 
   return 0;
 }
