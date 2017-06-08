@@ -5,12 +5,17 @@
 #include <math.h>
 #include <random>
 #include <numeric>
+#include <ctime>
+#include <boost/random/mersenne_twister.hpp>
+#include <boost/random/uniform_real_distribution.hpp>
+#include <boost/random.hpp>
 #include "StateValues.h"
 #include "Transitions.cpp"
 
 double mBeta = 2;
 double mGamma = 1;
-int population_size = 100;
+int population_size = 10000;
+int initial_infected = 100;
 
 state_values states;
 std::vector<Transition> transitions;
@@ -20,8 +25,8 @@ double t = 0;
 const double T_MAX = 1000; //Arbitrary really
 
 void setupSIR() {
-  states["S"] = 99;
-  states["I"] = 1;
+  states["S"] = population_size - initial_infected;
+  states["I"] = initial_infected;
   states["R"] = 0;
 
   Transition transitionSI = Transition("S", "I", mBeta/(population_size-1), 1);
@@ -45,9 +50,15 @@ void serialise(double pT, state_values pStates) {
 int main() {
   setupSIR();
 
-  std::random_device rd;
-  std::default_random_engine generator(rd());
-  std::uniform_real_distribution<double> mRand(0.0, 1.0);
+  typedef boost::uniform_real<> NumberDistribution; 
+  typedef boost::mt19937 RandomNumberGenerator; 
+  typedef boost::variate_generator<RandomNumberGenerator&, 
+                                   NumberDistribution> Generator; 
+ 
+  NumberDistribution distribution(0, 1); 
+  RandomNumberGenerator generator; 
+  Generator runif(generator, distribution); 
+  generator.seed(std::time(0)); // seed with the current time 
 
   std::cout << "t";
   for(state_values::iterator it=states.begin(); it != states.end(); it++) {
@@ -72,7 +83,7 @@ int main() {
     }
     double rates_sum = std::accumulate(rates.begin(), rates.end(), (double) 0.0);
     
-    double event_time = -(1.0/rates_sum) * log(mRand(generator));
+    double event_time = -(1.0/rates_sum) * log(runif());
     if (isinf(event_time)) {
       return 0;
     }
@@ -86,7 +97,7 @@ int main() {
     }
 
     int eventOccurred = 0;
-    double u = mRand(generator);
+    double u = runif();
     
     while (u > rates_normalised[eventOccurred]) {
       eventOccurred++;
