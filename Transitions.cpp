@@ -11,6 +11,8 @@ protected:
   int transition_type;
 
 public:
+  const static int TRANSITION_TYPE_INDIVIDUAL = 0;
+  const static int TRANSITION_TYPE_MASS_ACTION = 1;
   Transition(std::string pSource_state, std::string pDestination_state, double pRate, int pTransition_type) {
     source_state = pSource_state;
     destination_state = pDestination_state;

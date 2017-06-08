@@ -29,10 +29,10 @@ void setupSIR() {
   states["I"] = initial_infected;
   states["R"] = 0;
 
-  Transition transitionSI = Transition("S", "I", mBeta/(population_size-1), 1);
+  Transition transitionSI = Transition("S", "I", mBeta/(population_size-1), Transition::TRANSITION_TYPE_MASS_ACTION);
   transitions.push_back(transitionSI);
 
-  Transition transitionIR = Transition("I","R", mGamma, 0);
+  Transition transitionIR = Transition("I","R", mGamma, Transition::TRANSITION_TYPE_INDIVIDUAL);
   transitions.push_back(transitionIR);
 }
 
