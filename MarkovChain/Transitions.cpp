@@ -7,29 +7,21 @@ class Transition {
 protected:
   std::string source_state;
   std::string destination_state;
-  double rate;
-  int transition_type;
+  parameter_map parameters;
+  double (*getActualRate)(state_values pStates, parameter_map parameters);
 
 public:
+  
   const static int TRANSITION_TYPE_INDIVIDUAL = 0;
   const static int TRANSITION_TYPE_MASS_ACTION = 1;
-  Transition(std::string pSource_state, std::string pDestination_state, double pRate, int pTransition_type) {
+  
+  Transition(std::string pSource_state, std::string pDestination_state, parameter_map _parameters, double (*pGetActualRate)(state_values pStates, parameter_map parameters)) {
     source_state = pSource_state;
     destination_state = pDestination_state;
-    rate = pRate;
-    transition_type = pTransition_type;
+    getActualRate = pGetActualRate;
+    parameters = _parameters;
   }
 
-  double getActualRate(state_values pStates) {
-    switch (transition_type) {
-      case 0 : return (rate * pStates[source_state]);
-      case 1: return (rate * pStates[source_state]*pStates[destination_state]);
-      default: return 0;
-    }
-  }
-  void setRate(double pRate) {
-    rate = pRate;
-  }
   void setStates(std::string pSource_state, std::string pDestination_state) {
     source_state = pSource_state;
     destination_state = pDestination_state;
@@ -40,8 +32,9 @@ public:
     pStates[destination_state]++;
   }
 
-  void setTransitionType(int pTransition_type) {
-    transition_type = pTransition_type;
+  double getRate(state_values pStates)
+  {
+    return getActualRate(pStates, parameters);
   }
 
 };
