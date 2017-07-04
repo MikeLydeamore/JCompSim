@@ -6,6 +6,8 @@
 #include <random>
 #include <numeric>
 #include <ctime>
+#include <iostream>
+#include <fstream>
 #include <boost/random/mersenne_twister.hpp>
 #include <boost/random/uniform_real_distribution.hpp>
 #include <boost/random.hpp>
@@ -28,18 +30,19 @@ class MarkovChain
         return c;
     }
     double T_MAX = 500;
+    std::string filename;
 
 
   protected:
-    void serialise(double pT, state_values pStates) {
-        std::cout << pT;
+    void serialise(std::ofstream &outputfile, double pT, state_values pStates) {
+        outputfile << pT;
 
         std::map<std::string,int>::iterator it;
 
         for(it=pStates.begin(); it != pStates.end(); it++) {
-            std::cout << "," << it->second;
+            outputfile << "," << it->second;
         }
-        std::cout << "\n";
+        outputfile << "\n";
         }
 
     state_values states;
@@ -57,8 +60,15 @@ class MarkovChain
     void setMaxTime(double newMaxTime) {
         T_MAX = newMaxTime;
     }
+
+    void setOutputFile(std::string newfilename) {
+        filename = newfilename;
+    }
     void simulateChain()
     {
+        std::ofstream outputfile;
+        outputfile.open(filename);
+
         double t = 0;
         
         int population_size = 0;
@@ -80,14 +90,14 @@ class MarkovChain
         unsigned long seed = mix(clock(), time(NULL), getpid());
         generator.seed(seed); // seed with the current time
 
-        std::cout << "t";
+        outputfile << "t";
         for (state_values::iterator it = states.begin(); it != states.end(); it++)
         {
-            std::cout << "," << it->first;
+            outputfile << "," << it->first;
         }
-        std::cout << "\n";
+        outputfile << "\n";
 
-        serialise(t, states);
+        serialise(outputfile, t, states);
 
         while (t < T_MAX)
         {
@@ -131,7 +141,8 @@ class MarkovChain
             }
             transitions[eventOccurred].do_transition(states);
 
-            serialise(t, states);
+            serialise(outputfile, t, states);
         }
+        outputfile.close();
     }
 };
