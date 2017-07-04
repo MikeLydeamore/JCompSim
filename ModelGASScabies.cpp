@@ -48,6 +48,8 @@ class ModelGASScabies {
             double enhanced_susc = 1;
 
             int population_size = 10000;
+            int initial_infected_scabies = 100;
+            int initial_infected_gas = 100;
 
             parameter_map parameters;
             parameters["beta_gas"] = beta_gas / (population_size-1);
@@ -57,12 +59,10 @@ class ModelGASScabies {
             parameters["gamma_scabies"] = gamma_scabies;
             parameters["enhanced_susc"] = enhanced_susc;
 
-            chain.addState("SS", 9800);
-            chain.addState("SI", 100);
-            chain.addState("IS", 100);
+            chain.addState("SS", population_size-initial_infected_gas-initial_infected_scabies);
+            chain.addState("SI", initial_infected_scabies);
+            chain.addState("IS", initial_infected_gas);
             chain.addState("II", 0);
-
-            chain.setMaxTime(50);
 
             chain.addTransition(Transition("SS", "SI", parameters, *rateSStoSI));
             chain.addTransition(Transition("SI", "SS", parameters, *rateSItoSS));
