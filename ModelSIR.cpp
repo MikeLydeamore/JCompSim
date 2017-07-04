@@ -2,12 +2,12 @@
 class ModelSIR {
 
     protected:
-        static double getRateSI(state_values states, parameter_map parameters) {
+        static double getRateSToI(state_values states, parameter_map parameters) {
 
             return (parameters["beta"] * states["S"] * states["I"]);
         }
 
-        static double getRateIR(state_values states, parameter_map parameters) {
+        static double getRateIToR(state_values states, parameter_map parameters) {
             return (parameters["gamma"] * states["I"]);
         }
 
@@ -30,10 +30,10 @@ class ModelSIR {
             chain.addState("I", initial_infected);
             chain.addState("R", 0);
      
-            Transition transitionSI = Transition("S", "I", parametersSI, *getRateSI);
+            Transition transitionSI = Transition("S", "I", parametersSI, *getRateSToI);
             chain.addTransition(transitionSI);
 
-            Transition transitionIR = Transition("I","R", parametersIR, *getRateIR);
+            Transition transitionIR = Transition("I","R", parametersIR, *getRateIToR);
             chain.addTransition(transitionIR);
         }
 };

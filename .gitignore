@@ -5,3 +5,5 @@ GTAGS
 MarkovSimulator
 tasks.json
 MarkovChainSimulator
+*.csv
+*.m

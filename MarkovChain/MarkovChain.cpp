@@ -27,6 +27,7 @@ class MarkovChain
         c=c-a;  c=c-b;  c=c^(b >> 15);
         return c;
     }
+    double T_MAX = 500;
 
 
   protected:
@@ -52,10 +53,13 @@ class MarkovChain
     void addTransition(Transition transition) {
         transitions.push_back(transition);
     }
+
+    void setMaxTime(double newMaxTime) {
+        T_MAX = newMaxTime;
+    }
     void simulateChain()
     {
         double t = 0;
-        const double T_MAX = 1000; //Arbitrary really
         
         int population_size = 0;
         for (state_values::iterator it = states.begin(); it != states.end(); it++)
