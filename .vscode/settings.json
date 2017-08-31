@@ -45,6 +45,8 @@
         "mutex": "cpp",
         "ratio": "cpp",
         "system_error": "cpp",
-        "thread": "cpp"
+        "thread": "cpp",
+        "cinttypes": "cpp",
+        "future": "cpp"
     }
 }

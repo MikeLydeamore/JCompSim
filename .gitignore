@@ -7,3 +7,5 @@ tasks.json
 MarkovChainSimulator
 *.csv
 *.m
+*.swp
+runSISManyTimes

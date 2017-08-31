@@ -2,6 +2,7 @@
 #include "ModelSIR.cpp"
 #include "ModelGASScabies.cpp"
 #include "ModelSI.cpp"
+#include "ModelSIS.cpp"
 
 int main(int argc, char *argv[]) {
   if (argc != 2) {
@@ -10,10 +11,11 @@ int main(int argc, char *argv[]) {
   }
   MarkovChain chain;
   //ModelSIR model;
-  ModelGASScabies model;
+  //ModelGASScabies model;
   //ModelSI model;
+  ModelSIS model;
   model.setupModel(chain);
-  chain.setMaxTime(300);
+  chain.setMaxTime(5*365);
   chain.setOutputFile(argv[1]);
   chain.simulateChain();
 
