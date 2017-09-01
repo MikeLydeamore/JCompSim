@@ -8,7 +8,7 @@ protected:
   std::string mSource_state;
   std::string mDestination_state;
   parameter_map mParameters;
-  double (*mGetActualRate)(state_values pStates, parameter_map parameters);
+  double (*mpGetActualRate)(state_values pStates, parameter_map parameters);
   int mTransition_type = 0;
 
 public:
@@ -18,7 +18,7 @@ public:
   const static int TRANSITION_TYPE_MASS_ACTION = 1;
   
   Transition(std::string source_state, std::string destination_state, parameter_map parameters, double (*getActualRate)(state_values pStates, parameter_map parameters), int transition_type = -1) :
-    mSource_state(source_state), mDestination_state(destination_state), mParameters(parameters), mGetActualRate(getActualRate), mTransition_type(transition_type) {};
+    mSource_state(source_state), mDestination_state(destination_state), mParameters(parameters), mpGetActualRate(getActualRate), mTransition_type(transition_type) {};
 
   void setStates(std::string source_state, std::string destination_state) {
     mSource_state = source_state;
@@ -34,7 +34,7 @@ public:
   {
     if (mTransition_type == TRANSITION_TYPE_CUSTOM)
     {
-      return mGetActualRate(states, mParameters);
+      return mpGetActualRate(states, mParameters);
     }
     if (mTransition_type == TRANSITION_TYPE_INDIVIDUAL) 
     {
