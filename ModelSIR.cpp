@@ -30,10 +30,10 @@ class ModelSIR {
             chain.addState("I", initial_infected);
             chain.addState("R", 0);
      
-            Transition transitionSI = Transition("S", "I", parametersSI, *getRateSToI);
+            Transition transitionSI = Transition("S", "I", parametersSI, NULL, Transition::TRANSITION_TYPE_MASS_ACTION);
             chain.addTransition(transitionSI);
 
-            Transition transitionIR = Transition("I","R", parametersIR, *getRateIToR);
+            Transition transitionIR = Transition("I","R", parametersIR, NULL, Transition::TRANSITION_TYPE_INDIVIDUAL);
             chain.addTransition(transitionIR);
         }
 };
