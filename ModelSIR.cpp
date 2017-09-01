@@ -24,8 +24,6 @@ class ModelSIR {
             parameter_map parametersIR;
             parametersIR["gamma"] = gamma;
             
-            parametersIR["gamma"] = 1;
-            
             chain.addState("S", population_size - initial_infected);
             chain.addState("I", initial_infected);
             chain.addState("R", 0);
