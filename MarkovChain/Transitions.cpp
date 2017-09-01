@@ -25,9 +25,9 @@ public:
     mDestination_state = destination_state;
   }
 
-  void do_transition (state_values &states) {
-    states[mSource_state]--;
-    states[mDestination_state]++;
+  void do_transition (state_values &rStates) {
+    rStates[mSource_state]--;
+    rStates[mDestination_state]++;
   }
 
   double getRate(state_values states)

@@ -38,7 +38,7 @@ class ModelGASScabies {
         }
 
     public:
-        void setupModel(MarkovChain &chain) {
+        void setupModel(MarkovChain &rChain) {
             double beta_gas = 1.0/5.0;
             double gamma_gas = 1.0/7.0;
             
@@ -59,18 +59,18 @@ class ModelGASScabies {
             parameters["gamma_scabies"] = gamma_scabies;
             parameters["enhanced_susc"] = enhanced_susc;
 
-            chain.addState("SS", population_size-initial_infected_gas-initial_infected_scabies);
-            chain.addState("SI", initial_infected_scabies);
-            chain.addState("IS", initial_infected_gas);
-            chain.addState("II", 0);
+            rChain.addState("SS", population_size-initial_infected_gas-initial_infected_scabies);
+            rChain.addState("SI", initial_infected_scabies);
+            rChain.addState("IS", initial_infected_gas);
+            rChain.addState("II", 0);
 
-            chain.addTransition(Transition("SS", "SI", parameters, *rateSStoSI));
-            chain.addTransition(Transition("SI", "SS", parameters, *rateSItoSS));
-            chain.addTransition(Transition("SS", "IS", parameters, *rateSStoIS));
-            chain.addTransition(Transition("IS", "SS", parameters, *rateIStoSS));
-            chain.addTransition(Transition("SI", "II", parameters, *rateSItoII));
-            chain.addTransition(Transition("II", "SI", parameters, *rateIItoSI));
-            chain.addTransition(Transition("IS", "II", parameters, *rateIStoII));
-            chain.addTransition(Transition("II", "IS", parameters, *rateIItoIS));
+            rChain.addTransition(Transition("SS", "SI", parameters, *rateSStoSI));
+            rChain.addTransition(Transition("SI", "SS", parameters, *rateSItoSS));
+            rChain.addTransition(Transition("SS", "IS", parameters, *rateSStoIS));
+            rChain.addTransition(Transition("IS", "SS", parameters, *rateIStoSS));
+            rChain.addTransition(Transition("SI", "II", parameters, *rateSItoII));
+            rChain.addTransition(Transition("II", "SI", parameters, *rateIItoSI));
+            rChain.addTransition(Transition("IS", "II", parameters, *rateIStoII));
+            rChain.addTransition(Transition("II", "IS", parameters, *rateIItoIS));
         }
 };

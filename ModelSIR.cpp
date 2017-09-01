@@ -13,7 +13,7 @@ class ModelSIR {
 
     public:
 
-        void setupModel(MarkovChain &chain) {
+        void setupModel(MarkovChain &rChain) {
             int initial_infected = 100;
             double beta = 2;
             double gamma = 1;
@@ -24,14 +24,14 @@ class ModelSIR {
             parameter_map parametersIR;
             parametersIR["gamma"] = gamma;
             
-            chain.addState("S", population_size - initial_infected);
-            chain.addState("I", initial_infected);
-            chain.addState("R", 0);
+            rChain.addState("S", population_size - initial_infected);
+            rChain.addState("I", initial_infected);
+            rChain.addState("R", 0);
      
             Transition transitionSI = Transition("S", "I", parametersSI, NULL, Transition::TRANSITION_TYPE_MASS_ACTION);
-            chain.addTransition(transitionSI);
+            rChain.addTransition(transitionSI);
 
             Transition transitionIR = Transition("I","R", parametersIR, NULL, Transition::TRANSITION_TYPE_INDIVIDUAL);
-            chain.addTransition(transitionIR);
+            rChain.addTransition(transitionIR);
         }
 };
