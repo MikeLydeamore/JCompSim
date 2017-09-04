@@ -8,10 +8,15 @@ public:
         double nu = 5;
         double kappa = 0.1;
 
-        parameter_map paramSI; paramSI["beta"] = beta;
-        parameter_map paramIR; paramIR["gamma"] = gamma;
-        parameter_map paramRW; paramRW["kappa"] = 2*kappa;
-        parameter_map paramWR; paramWR["nubeta"] = nu * beta;
-        parameter_map paramRS; paramRS["kappa"] = 2*kappa;
+        rChain.addState("S");
+        rChain.addState("I");
+        rChain.addState("R");
+        rChain.addState("W");
+
+        rChain.addTransition(Transition("S", "I", beta, Transition::TRANSITION_TYPE_MASS_ACTION));
+        rChain.addTransition(Transition("I","R", gamma, Transition::TRANSITION_TYPE_INDIVIDUAL));
+        rChain.addTransition(Transition("R","W", 2*kappa, Transition::TRANSITION_TYPE_INDIVIDUAL));
+        rChain.addTransition(Transition("W","R", nu*beta, Transition::TRANSITION_TYPE_MASS_ACTION, {"I"}));
+        rChain.addTransition(Transition("R","S", 2*kappa, Transition::TRANSITION_TYPE_INDIVIDUAL));
     }
 }
