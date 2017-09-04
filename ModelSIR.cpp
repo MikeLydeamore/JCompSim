@@ -18,20 +18,15 @@ class ModelSIR {
             double beta = 2;
             double gamma = 1;
             int population_size = 10000;
-            parameter_map parametersSI;
-            parametersSI["beta"] = beta/(population_size-1);
-            
-            parameter_map parametersIR;
-            parametersIR["gamma"] = gamma;
-            
+                 
             rChain.addState("S", population_size - initial_infected);
             rChain.addState("I", initial_infected);
             rChain.addState("R", 0);
      
-            Transition transitionSI = Transition("S", "I", parametersSI, NULL, Transition::TRANSITION_TYPE_MASS_ACTION);
+            Transition transitionSI = Transition("S", "I", beta/(population_size - 1), Transition::TRANSITION_TYPE_MASS_ACTION);
             rChain.addTransition(transitionSI);
 
-            Transition transitionIR = Transition("I","R", parametersIR, NULL, Transition::TRANSITION_TYPE_INDIVIDUAL);
+            Transition transitionIR = Transition("I","R", gamma, Transition::TRANSITION_TYPE_INDIVIDUAL);
             rChain.addTransition(transitionIR);
         }
 };
