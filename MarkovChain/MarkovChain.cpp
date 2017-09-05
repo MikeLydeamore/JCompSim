@@ -32,7 +32,7 @@ class MarkovChain
     double T_MAX = 500;
     std::string filename;
 
-    void simulateChain()
+    void solveGillespie()
     {
         std::ofstream outputfile;
         outputfile.open(filename);
@@ -151,8 +151,8 @@ class MarkovChain
     }
 
     void solve(int solver_type) {
-        if (solve_type == SOLVER_TYPE_GILLESPIE) {
-            simulateChain();
+        if (solver_type == SOLVER_TYPE_GILLESPIE) {
+            solveGillespie();
         }
     }
 
