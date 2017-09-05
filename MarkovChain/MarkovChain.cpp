@@ -14,7 +14,7 @@
 #include "StateValues.h"
 #include "Transitions.cpp"
 
-class Model
+class MarkovChain
 {
   private:
     unsigned long mix(unsigned long a, unsigned long b, unsigned long c) {
