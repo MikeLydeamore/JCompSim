@@ -54,7 +54,7 @@ public:
     }
     if (mTransition_type == TRANSITION_TYPE_INDIVIDUAL) 
     {
-      return (mParameters[0] * states[mSource_state]);
+      return (mParameters.begin()->second * states[mSource_state]);
     }
     if (mTransition_type == TRANSITION_TYPE_MASS_ACTION)
     {
@@ -63,7 +63,7 @@ public:
       {
         governing_rate += states[governing_state];
       }
-      return (mParameters[0] * states[mSource_state] * governing_rate);
+      return (mParameters.begin()->second * states[mSource_state] * governing_rate);
     }
 
     return (0);

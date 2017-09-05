@@ -14,7 +14,7 @@
 #include "StateValues.h"
 #include "Transitions.cpp"
 
-class MarkovChain
+class Model
 {
   private:
     unsigned long mix(unsigned long a, unsigned long b, unsigned long c) {
@@ -32,38 +32,6 @@ class MarkovChain
     double T_MAX = 500;
     std::string filename;
 
-
-  protected:
-    void serialise(std::ofstream &outputfile, double pT, state_values pStates) {
-        outputfile << pT;
-
-        std::map<std::string,int>::iterator it;
-
-        for(it=pStates.begin(); it != pStates.end(); it++) {
-            outputfile << "," << it->second;
-        }
-        outputfile << "\n";
-        }
-
-    state_values states;
-    std::vector<Transition> transitions;
-
-  public:
-    void addState(std::string state_name, int initial_value) {
-        states[state_name] = initial_value;
-    }
-
-    void addTransition(Transition transition) {
-        transitions.push_back(transition);
-    }
-
-    void setMaxTime(double newMaxTime) {
-        T_MAX = newMaxTime;
-    }
-
-    void setOutputFile(std::string newfilename) {
-        filename = newfilename;
-    }
     void simulateChain()
     {
         std::ofstream outputfile;
@@ -145,4 +113,48 @@ class MarkovChain
         }
         outputfile.close();
     }
+
+
+  protected:
+    void serialise(std::ofstream &outputfile, double pT, state_values pStates) {
+        outputfile << pT;
+
+        std::map<std::string,int>::iterator it;
+
+        for(it=pStates.begin(); it != pStates.end(); it++) {
+            outputfile << "," << it->second;
+        }
+        outputfile << "\n";
+        }
+
+    state_values states;
+    std::vector<Transition> transitions;
+
+  public:
+
+    const static int SOLVER_TYPE_GILLESPIE = 1;
+
+    void addState(std::string state_name, int initial_value) {
+        states[state_name] = initial_value;
+    }
+
+    void addTransition(Transition transition) {
+        transitions.push_back(transition);
+    }
+
+    void setMaxTime(double newMaxTime) {
+        T_MAX = newMaxTime;
+    }
+
+    void setOutputFile(std::string newfilename) {
+        filename = newfilename;
+    }
+
+    void solve(int solver_type) {
+        if (solve_type == SOLVER_TYPE_GILLESPIE) {
+            simulateChain();
+        }
+    }
+
+    
 };
