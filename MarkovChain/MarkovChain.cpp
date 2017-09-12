@@ -40,7 +40,7 @@ class MarkovChain
         double t = 0;
         
         int population_size = 0;
-        for (state_values::iterator it = states.begin(); it != states.end(); it++)
+        for (state_values_discrete::iterator it = states.begin(); it != states.end(); it++)
         {
             assert(it->second >= 0);
             population_size += it->second;
@@ -59,7 +59,7 @@ class MarkovChain
         generator.seed(seed); // seed with the current time
 
         outputfile << "t";
-        for (state_values::iterator it = states.begin(); it != states.end(); it++)
+        for (state_values_discrete::iterator it = states.begin(); it != states.end(); it++)
         {
             outputfile << "," << it->first;
         }
@@ -71,7 +71,7 @@ class MarkovChain
         {
 
             int actual_size = 0;
-            for (state_values::iterator it = states.begin(); it != states.end(); it++)
+            for (state_values_discrete::iterator it = states.begin(); it != states.end(); it++)
             {
                 assert(it->second >= 0);
                 actual_size += it->second;
@@ -113,21 +113,75 @@ class MarkovChain
         }
         outputfile.close();
     }
+    
+    void solveDeterministic() {
+        
+
+        //Contains the State keys in order. state_mappings[index] will give the index in the array of states.
+        std::map<int, std::string> state_mappings;
+        
+        int i = 0;
+        for (Iterator it = states.begin(), it != states.end(); ++it) {
+            state_mappings[i] = it->first;
+            i++;
+        }
+        
+    }
+
+    void derivative(const state_array p, state_array &dpdt, const double t) {
+        std::map<std::string, double> dpdt_map;
+        
+        int i = 0;
+        for (Iterator it = p.begin(); it != p.end(); ++it) {
+            //Update states with current position.
+            states[state_mappings[i]] = it;
+
+            //Initialize map to have all the relevant keys.
+            dpdt_map[state_mappings[i]] = 0;
+
+            i++;
+        }
+
+        for (Transition transition : transitions) {
+            dpdt_map[transition.getSourceState()] -= transition.getRate(states);
+            dpdt_map[transition.getDestinationState()] += transition.getRate(states);
+        }
+
+        //convert map back into state_array
+        i = 0;
+        for (Iterator it = dpdt_map.begin(); it != dpdt_map.end(); ++it) {
+            dpdt[i] = it->second;
+            i++;
+        }
+
+    }
 
 
   protected:
-    void serialise(std::ofstream &outputfile, double pT, state_values pStates) {
-        outputfile << pT;
+    void serialise(std::ofstream &rOutputfile, double t, state_values_discrete states) {
+        rOutputfile << t;
 
         std::map<std::string,int>::iterator it;
 
-        for(it=pStates.begin(); it != pStates.end(); it++) {
-            outputfile << "," << it->second;
+        for(it=states.begin(); it != states.end(); it++) {
+            rOutputfile << "," << it->second;
         }
-        outputfile << "\n";
-        }
+        rOutputfile << "\n";
+    }
 
-    state_values states;
+    void serialise(std::ofstream &rOutputfile, double t, state_values_continuous states) {
+        rOutputfile << t;
+
+        std::map<std::stirng, double>::iterator it;
+
+        for (it = states.begin(); it != states.end(); it++) {
+            rOutputfile << "," << it->second;
+        }
+        rOutputfile << "\n";
+    }
+
+    state_values_discrete states;
+    state_values_continuous states_continuous;
     std::vector<Transition> transitions;
 
   public:

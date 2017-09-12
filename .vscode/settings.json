@@ -47,6 +47,7 @@
         "system_error": "cpp",
         "thread": "cpp",
         "cinttypes": "cpp",
-        "future": "cpp"
+        "future": "cpp",
+        "string": "cpp"
     }
 }

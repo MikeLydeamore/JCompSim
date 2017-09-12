@@ -69,4 +69,14 @@ public:
     return (0);
   }
 
+  std::string getSourceState()
+  {
+    return (mSource_state);
+  }
+
+  std::string getDestinationState()
+  {
+    return (mDestination_state);
+  }
+
 };
