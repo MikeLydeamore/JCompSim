@@ -33,7 +33,6 @@ class MarkovChain
     }
     double T_MAX = 500;
     std::string filename;
-    //void (*mpSerialise) (double t, state_values_discrete<T> states);
     Serialiser<T> *mpSerialiser;
 
     void solveGillespie()
@@ -44,7 +43,7 @@ class MarkovChain
         double t = 0;
         
         int population_size = 0;
-        for (typename state_values_discrete<T>::iterator it = states.begin(); it != states.end(); it++)
+        for (typename state_values<T>::iterator it = states.begin(); it != states.end(); it++)
         {
             assert(it->second >= 0);
             population_size += it->second;
@@ -70,7 +69,7 @@ class MarkovChain
         {
 
             int actual_size = 0;
-            for (typename state_values_discrete<T>::iterator it = states.begin(); it != states.end(); it++)
+            for (typename state_values<T>::iterator it = states.begin(); it != states.end(); it++)
             {
                 assert(it->second >= 0);
                 actual_size += it->second;
@@ -157,7 +156,7 @@ class MarkovChain
 
 
   protected:
-    state_values_discrete<T> states;
+    state_values<T> states;
 
     std::vector<Transition<T> > transitions;
 

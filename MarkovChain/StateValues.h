@@ -5,15 +5,7 @@
 #include <map>
 
 template<class T>
-//typedef std::map<std::string, int> state_values_discrete;
-using state_values_discrete = std::map<std::string, T>;
-
-#endif
-
-#ifndef STATEVALUES_CONTINUOUS_H_
-#define STATEVALUES_CONTINUOUS_H_
-
-typedef std::map<std::string, double> state_values_continuous;
+using state_values = std::map<std::string, T>;
 
 #endif
 
