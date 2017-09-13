@@ -1,3 +1,4 @@
+template<class T>
 class ModelGASScabies {
     /*
         First index = GAS
@@ -5,11 +6,11 @@ class ModelGASScabies {
     */
 
     protected:
-        static double rateSStoIS(state_values states, parameter_map parameters) { //Infection with GAS, no scabies
+        static double rateSStoIS(state_values_discrete<T> states, parameter_map parameters) { //Infection with GAS, no scabies
             return (parameters["beta_gas"] * states["SS"] * (states["IS"] + states["II"]));
         }
 
-        static double rateIStoSS(state_values states, parameter_map parameters) { //Recovery from GAS, no scabies
+        static double rateIStoSS(state_values_discrete<T> states, parameter_map parameters) { //Recovery from GAS, no scabies
             return (parameters["gamma_gas"] * states["IS"]);
         }
 

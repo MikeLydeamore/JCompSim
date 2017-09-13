@@ -13,7 +13,9 @@
 #include <boost/random.hpp>
 #include "StateValues.h"
 #include "Transitions.cpp"
+#include "Serialiser.cpp"
 
+template<class T>
 class MarkovChain
 {
   private:
@@ -31,6 +33,8 @@ class MarkovChain
     }
     double T_MAX = 500;
     std::string filename;
+    //void (*mpSerialise) (double t, state_values_discrete<T> states);
+    Serialiser<T> *mpSerialiser;
 
     void solveGillespie()
     {
@@ -40,7 +44,7 @@ class MarkovChain
         double t = 0;
         
         int population_size = 0;
-        for (state_values_discrete::iterator it = states.begin(); it != states.end(); it++)
+        for (typename state_values_discrete<T>::iterator it = states.begin(); it != states.end(); it++)
         {
             assert(it->second >= 0);
             population_size += it->second;
@@ -58,20 +62,15 @@ class MarkovChain
         unsigned long seed = mix(clock(), time(NULL), getpid());
         generator.seed(seed); // seed with the current time
 
-        outputfile << "t";
-        for (state_values_discrete::iterator it = states.begin(); it != states.end(); it++)
-        {
-            outputfile << "," << it->first;
-        }
-        outputfile << "\n";
+        mpSerialiser->serialiseHeader(states);
 
-        serialise(outputfile, t, states);
+        mpSerialiser->serialise(t, states);
 
         while (t < T_MAX)
         {
 
             int actual_size = 0;
-            for (state_values_discrete::iterator it = states.begin(); it != states.end(); it++)
+            for (typename state_values_discrete<T>::iterator it = states.begin(); it != states.end(); it++)
             {
                 assert(it->second >= 0);
                 actual_size += it->second;
@@ -109,12 +108,12 @@ class MarkovChain
             }
             transitions[eventOccurred].do_transition(states);
 
-            serialise(outputfile, t, states);
+            mpSerialiser->serialise(t, states);
         }
         outputfile.close();
     }
     
-    void solveDeterministic() {
+    /*void solveDeterministic() {
         
 
         //Contains the State keys in order. state_mappings[index] will give the index in the array of states.
@@ -126,9 +125,9 @@ class MarkovChain
             i++;
         }
         
-    }
+    }*/
 
-    void derivative(const state_array p, state_array &dpdt, const double t) {
+    /*void derivative(const state_array p, state_array &dpdt, const double t) {
         std::map<std::string, double> dpdt_map;
         
         int i = 0;
@@ -154,37 +153,19 @@ class MarkovChain
             i++;
         }
 
-    }
+    }*/
 
 
   protected:
-    void serialise(std::ofstream &rOutputfile, double t, state_values_discrete states) {
-        rOutputfile << t;
+    state_values_discrete<T> states;
 
-        std::map<std::string,int>::iterator it;
-
-        for(it=states.begin(); it != states.end(); it++) {
-            rOutputfile << "," << it->second;
-        }
-        rOutputfile << "\n";
-    }
-
-    void serialise(std::ofstream &rOutputfile, double t, state_values_continuous states) {
-        rOutputfile << t;
-
-        std::map<std::stirng, double>::iterator it;
-
-        for (it = states.begin(); it != states.end(); it++) {
-            rOutputfile << "," << it->second;
-        }
-        rOutputfile << "\n";
-    }
-
-    state_values_discrete states;
-    state_values_continuous states_continuous;
-    std::vector<Transition> transitions;
+    std::vector<Transition<T> > transitions;
 
   public:
+
+    void setSerialiser(Serialiser<T> *serialiser) {
+        mpSerialiser = serialiser;
+    }
 
     const static int SOLVER_TYPE_GILLESPIE = 1;
 
@@ -192,7 +173,7 @@ class MarkovChain
         states[state_name] = initial_value;
     }
 
-    void addTransition(Transition transition) {
+    void addTransition(Transition<T> transition) {
         transitions.push_back(transition);
     }
 

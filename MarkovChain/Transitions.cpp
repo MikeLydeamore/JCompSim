@@ -2,6 +2,7 @@
 #include <utility>
 #include "StateValues.h"
 
+template<class T>
 class Transition {
 
 protected:
@@ -9,7 +10,9 @@ protected:
   std::string mDestination_state;
   std::vector<std::string> mGoverning_states;
   parameter_map mParameters;
-  double (*mpGetActualRate)(state_values pStates, parameter_map parameters);
+
+  double (*mpGetActualRate)(state_values_discrete<T> pStates, parameter_map parameters);
+
   int mTransition_type = 0;
 
 public:
@@ -18,7 +21,7 @@ public:
   const static int TRANSITION_TYPE_INDIVIDUAL = 0;
   const static int TRANSITION_TYPE_MASS_ACTION = 1;
   
-  Transition(std::string source_state, std::string destination_state, parameter_map parameters, double (*getActualRate)(state_values pStates, parameter_map parameters), int transition_type = -1, std::vector<std::string> governing_states = {}) :
+  Transition(std::string source_state, std::string destination_state, parameter_map parameters, double (*getActualRate)(state_values_discrete<T> pStates, parameter_map parameters), int transition_type = -1, std::vector<std::string> governing_states = {}) :
     mSource_state(source_state), mDestination_state(destination_state), mParameters(parameters), mpGetActualRate(getActualRate), mTransition_type(transition_type), mGoverning_states(governing_states) 
     {
       if (mGoverning_states.size() == 0) {
@@ -41,12 +44,12 @@ public:
     mDestination_state = destination_state;
   }
 
-  void do_transition (state_values &rStates) {
-    rStates[mSource_state]--;
-    rStates[mDestination_state]++;
+  void do_transition (state_values_discrete<T> &rStates) {
+    rStates[mSource_state] -= 1;
+    rStates[mDestination_state] += 1;
   }
 
-  double getRate(state_values states)
+  double getRate(state_values_discrete<T> states)
   {
     if (mTransition_type == TRANSITION_TYPE_CUSTOM)
     {

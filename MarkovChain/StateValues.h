@@ -4,7 +4,9 @@
 #include <string>
 #include <map>
 
-typedef std::map<std::string, int> state_values_discrete;
+template<class T>
+//typedef std::map<std::string, int> state_values_discrete;
+using state_values_discrete = std::map<std::string, T>;
 
 #endif
 
