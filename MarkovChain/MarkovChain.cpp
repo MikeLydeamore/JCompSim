@@ -37,10 +37,8 @@ class MarkovChain
 
     void solveGillespie()
     {
-        std::ofstream outputfile;
-        outputfile.open(filename);
-
         double t = 0;
+        bool ended_infinite = false;
         
         int population_size = 0;
         for (typename state_values<T>::iterator it = states.begin(); it != states.end(); it++)
@@ -65,7 +63,7 @@ class MarkovChain
 
         mpSerialiser->serialise(t, states);
 
-        while (t < T_MAX)
+        while (t < T_MAX && !ended_infinite)
         {
 
             int actual_size = 0;
@@ -86,7 +84,8 @@ class MarkovChain
             double event_time = -(1.0 / rates_sum) * log(runif());
             if (isinf(event_time))
             {
-                return;
+                ended_infinite = true;
+                break;
             }
             t += event_time;
 
@@ -109,7 +108,7 @@ class MarkovChain
 
             mpSerialiser->serialise(t, states);
         }
-        outputfile.close();
+        mpSerialiser->serialiseFinally(t, states);
     }
     
     /*void solveDeterministic() {
@@ -178,10 +177,6 @@ class MarkovChain
 
     void setMaxTime(double newMaxTime) {
         T_MAX = newMaxTime;
-    }
-
-    void setOutputFile(std::string newfilename) {
-        filename = newfilename;
     }
 
     void solve(int solver_type) {
