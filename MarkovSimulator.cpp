@@ -3,13 +3,7 @@
 #include <json.hpp>
 #include <iostream>
 #include <fstream>
-//#include "MarkovChain/SerialiserFile.cpp"
-//#include "ModelSIR.cpp"
 #include "MarkovChain/json/ModelJson.cpp"
-//#include "ModelGASScabies.cpp"
-//#include "ModelSI.cpp"
-//#include "ModelSIS.cpp"
-//#include "ModelSIRWS.cpp"
 
 namespace po = boost::program_options;
 using json = nlohmann::json;
