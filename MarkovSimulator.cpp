@@ -14,6 +14,7 @@ int main(int argc, char *argv[]) {
   std::string filename;
   std::string statesFilename;
   std::string transitionsFilename;
+  std::string serialiserType;
 
   po::options_description desc("Allowed options");
   desc.add_options()
@@ -21,6 +22,7 @@ int main(int argc, char *argv[]) {
       ("filename,f", po::value<std::string>(&filename), "output file name")
       ("states,s", po::value<std::string>(&statesFilename), "states file name")
       ("transitions,t", po::value<std::string>(&transitionsFilename), "transitions file name")
+      ("serialiser", po::value<std::string>(&serialiserType), "serialiser type")
   ;
 
   po::variables_map vm;
@@ -51,14 +53,24 @@ int main(int argc, char *argv[]) {
     
     MarkovChain<T> chain;
     chain.setMaxTime(50);
+
     SerialiserFile<T> serialiser(filename);
-    chain.setSerialiser(&serialiser);
+    SerialiserFileFinalState<T> serialiserFileFinal(filename);
+    if (serialiserType == "full") {
+      chain.setSerialiser(&serialiser);
+    }
+    else if (serialiserType == "final") {
+      chain.setSerialiser(&serialiserFileFinal);
+    }
+    else {
+      chain.setSerialiser(&serialiser);
+    }
 
     ModelJson<T> model(states_json, transitions_json);
     model.setupModel(chain);
     
     chain.solve(chain.SOLVER_TYPE_GILLESPIE);
-    
+    std::cout << serialiserType << std::endl;
     return 0;
   }
 
