@@ -4,7 +4,8 @@
 #include <iostream>
 #include <fstream>
 //#include "MarkovChain/SerialiserFile.cpp"
-#include "ModelSIR.cpp"
+//#include "ModelSIR.cpp"
+#include "MarkovChain/json/ModelJson.cpp"
 //#include "ModelGASScabies.cpp"
 //#include "ModelSI.cpp"
 //#include "ModelSIS.cpp"
@@ -18,12 +19,14 @@ int main(int argc, char *argv[]) {
   
   std::string filename;
   std::string statesFilename;
+  std::string transitionsFilename;
 
   po::options_description desc("Allowed options");
   desc.add_options()
       ("help", "produce help message")
       ("filename,f", po::value<std::string>(&filename), "output file name")
       ("states,s", po::value<std::string>(&statesFilename), "states file name")
+      ("transitions,t", po::value<std::string>(&transitionsFilename), "transitions file name")
   ;
 
   po::variables_map vm;
@@ -37,44 +40,33 @@ int main(int argc, char *argv[]) {
 
   if (!vm.count("filename")) {
     std::cout << "filename must be provided" << std::endl;
+    return (-1);
   }
 
-  if (vm.count("states")) {
+  using T = int;
+
+  if (vm.count("states") && vm.count("transitions")) {
     std::ifstream states_file(statesFilename);
     json states_json;
     states_file >> states_json;
-    std::cout << states_json << std::endl;
+
+    std::ifstream transitions_file(transitionsFilename);
+    json transitions_json;
+    transitions_file >> transitions_json;
+
+    
+    MarkovChain<T> chain;
+    chain.setMaxTime(50);
+    SerialiserFile<T> serialiser(filename);
+    chain.setSerialiser(&serialiser);
+
+    ModelJson<T> model(states_json, transitions_json);
+    model.setupModel(chain);
+    
+    chain.solve(chain.SOLVER_TYPE_GILLESPIE);
+    
+    return 0;
   }
-
-  using T = double;
-
-  MarkovChain<T> chain;
-  ModelSIR<T> model;
-  //ModelGASScabies model;
-  //ModelSI model;
-  //ModelSIS model;
-  //ModelSIRWS<T> model;
-  model.setupModel(chain);
-  chain.setMaxTime(50);
-  
-
-
-  state_values<int> states;
-  states["S"]=0;
-  states["I"]=0;
-  json j;
-  for (typename state_values<int>::iterator it = states.begin(); it != states.end(); it++) {
-    j[it->first] = it->second;
-  }
-
-  std::ofstream o("pretty.json");
-  o << std::setw(4) << j << std::endl;
-
-  SerialiserFile<T> serialiser(filename);
-
-  chain.setSerialiser(&serialiser);
-
-  chain.solve(chain.SOLVER_TYPE_GILLESPIE);
 
   return 0;
 }

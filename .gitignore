@@ -10,3 +10,5 @@ MarkovChainSimulator
 *.swp
 runSISManyTimes
 pretty.json
+states.json.
+.DS_Store
