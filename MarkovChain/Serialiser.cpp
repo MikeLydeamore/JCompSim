@@ -102,7 +102,7 @@ public:
     virtual void serialise(double t, state_values<T> states) {
         double next_time = *mSerialiseTimes.begin();
         
-        while (t > next_time) {
+        while (t > next_time && !mSerialiseTimes.empty()) {
             SerialiserFile<T>::serialise(next_time, mLastState);
             mSerialiseTimes.erase(mSerialiseTimes.begin());
             next_time = *mSerialiseTimes.begin();

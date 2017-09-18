@@ -15,6 +15,8 @@ int main(int argc, char *argv[]) {
   std::string statesFilename;
   std::string transitionsFilename;
   std::string serialiserType;
+  double max_t = 50;
+  double dt = 0.001;
 
   po::options_description desc("Allowed options");
   desc.add_options()
@@ -23,6 +25,8 @@ int main(int argc, char *argv[]) {
       ("states,s", po::value<std::string>(&statesFilename), "states file name")
       ("transitions,t", po::value<std::string>(&transitionsFilename), "transitions file name")
       ("serialiser", po::value<std::string>(&serialiserType), "serialiser type")
+      ("maxt", po::value<double>(&max_t), "maximum simulation time")
+      ("dt", po::value<double>(&dt), "time step for serialising")
   ;
 
   po::variables_map vm;
@@ -52,13 +56,13 @@ int main(int argc, char *argv[]) {
 
     
     MarkovChain<T> chain;
-    chain.setMaxTime(50);
+    chain.setMaxTime(max_t);
 
     SerialiserFile<T> serialiser(filename);
     SerialiserFileFinalState<T> serialiserFileFinal(filename);
 
-    double dt = 0.01;
-    std::vector<double> serialiser_times(50.0/dt + 1);
+    std::vector<double> serialiser_times(max_t/dt + 1);
+    
     double n = {0};
     std::generate(serialiser_times.begin(), serialiser_times.end(), [&n, dt]{ return n += dt; });
     SerialiserPredefinedTimesFile<T> serialiserPredefinedTimesFile(serialiser_times, filename);
