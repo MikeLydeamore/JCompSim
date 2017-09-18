@@ -56,11 +56,20 @@ int main(int argc, char *argv[]) {
 
     SerialiserFile<T> serialiser(filename);
     SerialiserFileFinalState<T> serialiserFileFinal(filename);
+
+    double dt = 0.01;
+    std::vector<double> serialiser_times(50.0/dt + 1);
+    double n = {0};
+    std::generate(serialiser_times.begin(), serialiser_times.end(), [&n, dt]{ return n += dt; });
+    SerialiserPredefinedTimesFile<T> serialiserPredefinedTimesFile(serialiser_times, filename);
     if (serialiserType == "full") {
       chain.setSerialiser(&serialiser);
     }
     else if (serialiserType == "final") {
       chain.setSerialiser(&serialiserFileFinal);
+    }
+    else if (serialiserType == "points") {
+      chain.setSerialiser(&serialiserPredefinedTimesFile);
     }
     else {
       chain.setSerialiser(&serialiser);
@@ -70,7 +79,6 @@ int main(int argc, char *argv[]) {
     model.setupModel(chain);
     
     chain.solve(chain.SOLVER_TYPE_GILLESPIE);
-    std::cout << serialiserType << std::endl;
     return 0;
   }
 

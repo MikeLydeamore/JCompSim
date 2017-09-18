@@ -69,3 +69,44 @@ public:
         SerialiserFile<T>::serialise(t, states);
     }
 };
+
+template<class T>
+class SerialiserPredefinedTimes : public Serialiser<T> {
+private:
+    std::vector<double> mSerialiseTimes;
+    state_values<T> mLastState;
+
+public:
+    SerialiserPredefinedTimes(std::vector<double> serialiseTimes) : mSerialiseTimes(serialiseTimes) {}
+    virtual void serialise(double t, state_values<T> states) {
+        double next_time = *mSerialiseTimes.begin();
+
+        while (t > next_time) {
+            Serialiser<T>::serialise(next_time, mLastState);
+            mSerialiseTimes.erase(mSerialiseTimes.begin());
+            next_time = *mSerialiseTimes.begin();
+        }
+        mLastState = states;
+    }
+};
+
+template<class T>
+class SerialiserPredefinedTimesFile : public SerialiserFile<T> {
+private:
+    std::vector<double> mSerialiseTimes;
+    state_values<T> mLastState;
+
+public:
+    SerialiserPredefinedTimesFile(std::vector<double> serialiseTimes, std::string filename) : SerialiserFile<T>(filename), mSerialiseTimes(serialiseTimes) {}
+    
+    virtual void serialise(double t, state_values<T> states) {
+        double next_time = *mSerialiseTimes.begin();
+        
+        while (t > next_time) {
+            SerialiserFile<T>::serialise(next_time, mLastState);
+            mSerialiseTimes.erase(mSerialiseTimes.begin());
+            next_time = *mSerialiseTimes.begin();
+        }
+        mLastState = states;
+    }
+};
