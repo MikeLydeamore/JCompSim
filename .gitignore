@@ -12,3 +12,4 @@ runSISManyTimes
 pretty.json
 states.json
 .DS_Store
+c_cpp_properties.json

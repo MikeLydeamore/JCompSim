@@ -4,7 +4,7 @@
 #include <iostream>
 #include <fstream>
 #include "MarkovChain/json/ModelJson.cpp"
-#include "ModelSIRWS.cpp"
+#include "ModelChickenFlu.cpp"
 
 namespace po = boost::program_options;
 using json = nlohmann::json;
@@ -88,7 +88,7 @@ int main(int argc, char *argv[]) {
   }
   
   MarkovChain<T> chain;
-  ModelSIRWS<T> model;
+  ModelChickenFlu<T> model;
   SerialiserFile<T> serialiser2(filename);
   model.setupModel(chain);
   chain.setMaxTime(100);
