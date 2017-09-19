@@ -4,6 +4,7 @@
 #include <iostream>
 #include <fstream>
 #include "MarkovChain/json/ModelJson.cpp"
+#include "ModelSIRWS.cpp"
 
 namespace po = boost::program_options;
 using json = nlohmann::json;
@@ -63,7 +64,7 @@ int main(int argc, char *argv[]) {
 
     std::vector<double> serialiser_times(max_t/dt + 1);
     
-    double n = {0};
+    double n = {-1*dt};
     std::generate(serialiser_times.begin(), serialiser_times.end(), [&n, dt]{ return n += dt; });
     SerialiserPredefinedTimesFile<T> serialiserPredefinedTimesFile(serialiser_times, filename);
     if (serialiserType == "full") {
@@ -85,6 +86,15 @@ int main(int argc, char *argv[]) {
     chain.solve(chain.SOLVER_TYPE_GILLESPIE);
     return 0;
   }
+  
+  MarkovChain<T> chain;
+  ModelSIRWS<T> model;
+  SerialiserFile<T> serialiser2(filename);
+  model.setupModel(chain);
+  chain.setMaxTime(100);
+  chain.setSerialiser(&serialiser2);
+
+  chain.solve(chain.SOLVER_TYPE_GILLESPIE);
 
   return 0;
 }

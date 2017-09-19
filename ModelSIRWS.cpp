@@ -3,10 +3,10 @@ class ModelSIRWS {
 
 public:
     void setupModel(MarkovChain<T> &rChain) {
-        double beta = 260;
-        double gamma = 17;
+        double beta = 260.0/10000;
+        double gamma = 5;
         double mu = 1.0/80;
-        double nu = 5;
+        double nu = 0;
         double kappa = 1.0/10;
 
         int population_size = 10000;
@@ -21,7 +21,7 @@ public:
         rChain.addTransition(Transition<T>("I", "R", gamma, Transition<T>::TRANSITION_TYPE_INDIVIDUAL));
         rChain.addTransition(Transition<T>("R", "W", 2*kappa, Transition<T>::TRANSITION_TYPE_INDIVIDUAL));
         rChain.addTransition(Transition<T>("W", "R", nu*beta, Transition<T>::TRANSITION_TYPE_MASS_ACTION, {"I"}));
-        rChain.addTransition(Transition<T>("R", "S", 2*kappa, Transition<T>::TRANSITION_TYPE_INDIVIDUAL));
+        rChain.addTransition(Transition<T>("W", "S", 2*kappa, Transition<T>::TRANSITION_TYPE_INDIVIDUAL));
 
         rChain.addTransition(Transition<T>("I", "S", mu, Transition<T>::TRANSITION_TYPE_INDIVIDUAL));
         rChain.addTransition(Transition<T>("R", "S", mu, Transition<T>::TRANSITION_TYPE_INDIVIDUAL));
