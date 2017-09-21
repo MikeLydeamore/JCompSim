@@ -89,12 +89,12 @@ int main(int argc, char *argv[]) {
   
   MarkovChain<T> chain;
   ModelChickenFlu<T> model;
-  SerialiserFile<T> serialiser2(filename);
+  //SerialiserFile<T> serialiser2(filename);
   model.setupModel(chain);
   chain.setMaxTime(100);
   chain.setSerialiser(&serialiser2);
 
-  chain.solve(chain.SOLVER_TYPE_GILLESPIE);
+  //chain.solve(chain.SOLVER_TYPE_GILLESPIE);
 
   return 0;
 }

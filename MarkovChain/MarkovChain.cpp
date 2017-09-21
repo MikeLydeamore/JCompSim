@@ -172,6 +172,8 @@ class MarkovChain
     }
 
     void addTransition(Transition<T> transition) {
+        std::cout << ("Adding transition from " + transition.getSourceState() + " to " 
+        + transition.getDestinationState() + " at rate " + std::to_string(transition.getSingleParameter())) << std::endl;
         transitions.push_back(transition);
     }
 
