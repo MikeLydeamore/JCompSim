@@ -6,7 +6,7 @@
             "type": "cppdbg",
             "request": "launch",
             "program": "${workspaceRoot}/MarkovChainSimulator",
-            "args": [],
+            "args": ["--filename chickens1.csv"],
             "stopAtEntry": false,
             "cwd": "${workspaceRoot}",
             "environment": [],

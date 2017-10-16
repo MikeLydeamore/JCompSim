@@ -3,7 +3,7 @@
 #include <json.hpp>
 #include <iostream>
 #include <fstream>
-#include "MarkovChain/json/ModelJson.cpp"
+//#include "MarkovChain/json/ModelJson.cpp"
 #include "ModelChickenFlu.cpp"
 
 namespace po = boost::program_options;
@@ -46,7 +46,7 @@ int main(int argc, char *argv[]) {
 
   using T = int;
 
-  if (vm.count("states") && vm.count("transitions")) {
+  /*if (vm.count("states") && vm.count("transitions")) {
     std::ifstream states_file(statesFilename);
     json states_json;
     states_file >> states_json;
@@ -86,15 +86,21 @@ int main(int argc, char *argv[]) {
     chain.solve(chain.SOLVER_TYPE_GILLESPIE);
     return 0;
   }
-  
+  */
   MarkovChain<T> chain;
   ModelChickenFlu<T> model;
-  //SerialiserFile<T> serialiser2(filename);
-  model.setupModel(chain);
-  chain.setMaxTime(100);
-  chain.setSerialiser(&serialiser2);
+  double max_t2 = 1000;
+  double dt2 = 0.5;
+  std::vector<double> serialiser_times(max_t2/dt + 1);
+  double n = {-1*dt2};
+  std::generate(serialiser_times.begin(), serialiser_times.end(), [&n, dt2]{ return n += dt2; });
 
-  //chain.solve(chain.SOLVER_TYPE_GILLESPIE);
+  SerialiserPredefinedTimesFile<T> serialiserPredefinedTimesFile(serialiser_times, filename);
+  model.setupModel(chain);
+  chain.setMaxTime(1000);
+  chain.setSerialiser(&serialiserPredefinedTimesFile);
+
+  chain.solve(chain.SOLVER_TYPE_GILLESPIE);
 
   return 0;
 }

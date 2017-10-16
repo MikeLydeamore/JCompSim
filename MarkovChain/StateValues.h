@@ -1,5 +1,5 @@
-#ifndef STATEVALUES_DISCRETE_H_
-#define STATEVALUES_DISCRETE_H_
+#ifndef STATEVALUES_H_
+#define STATEVALUES_H_
 
 #include <string>
 #include <map>

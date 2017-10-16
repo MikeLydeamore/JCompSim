@@ -72,12 +72,18 @@ class MarkovChain
                 assert(it->second >= 0);
                 actual_size += it->second;
             }
-            assert(actual_size == population_size);
+            //assert(actual_size == population_size);
 
             std::vector<double> rates(transitions.size());
             for (int i = 0; i < transitions.size(); i++)
             {
-                rates[i] = transitions[i].getRate(states);
+                rates[i] = transitions[i]->getRate(states);
+                if (rates[i] < 0.0 || isnan(rates[i]))
+                {
+                    std::cout << "Transition from " << transitions[i]->getSourceState() << " to " << transitions[i]->getDestinationState() << " has rate " << rates[i] << std::endl;
+                    exit(-1);
+                }
+                assert(rates[i] >= 0);
             }
             double rates_sum = std::accumulate(rates.begin(), rates.end(), (double)0.0);
 
@@ -104,8 +110,7 @@ class MarkovChain
             {
                 eventOccurred++;
             }
-            transitions[eventOccurred].do_transition(states);
-
+            transitions[eventOccurred]->do_transition(states);
             mpSerialiser->serialise(t, states);
         }
         mpSerialiser->serialiseFinally(t, states);
@@ -157,7 +162,7 @@ class MarkovChain
   protected:
     state_values<T> states;
 
-    std::vector<Transition<T> > transitions;
+    std::vector<Transition<T>* > transitions;
 
   public:
 
@@ -171,9 +176,11 @@ class MarkovChain
         states[state_name] = initial_value;
     }
 
-    void addTransition(Transition<T> transition) {
-        std::cout << ("Adding transition from " + transition.getSourceState() + " to " 
-        + transition.getDestinationState() + " at rate " + std::to_string(transition.getSingleParameter())) << std::endl;
+    void addTransition(Transition<T> *transition) {
+        double two_decimals = round(100/transition->getSingleParameter())/100;
+        std::cout << ("Adding transition from " + transition->getSourceState() + " to " 
+        + transition->getDestinationState() + " at rate " + std::to_string(transition->getSingleParameter()) 
+        + " (1/") << std::setprecision(2) << std::fixed << two_decimals << ")" << std::endl;
         transitions.push_back(transition);
     }
 
