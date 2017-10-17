@@ -1,0 +1,27 @@
+[
+	{
+		"source_state": "S",
+		"destination_state": "I",
+		"parameter": 0.0000159,
+		"transition_type": "mass-action",
+		"governing_states": ["I"]
+	},
+	{
+		"source_state": "I",
+		"destination_state": "G",
+		"parameter": 0.0175,
+		"transition_type": "individual"
+	},
+	{
+		"source_state": "G",
+		"destination_state": "I",
+		"parameter": 0.0357,
+		"transition_type": "individual"
+	},
+	{
+		"source_state": "G",
+		"destination_state": "S",
+		"parameter": 0.0175,
+		"transition_type": "individual"
+	}
+]

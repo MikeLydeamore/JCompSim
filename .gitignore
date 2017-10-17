@@ -11,7 +11,5 @@ MarkovChainSimulator
 *.swo
 runSISManyTimes
 pretty.json
-states.json
-transitions.json
 .DS_Store
 c_cpp_properties.json
