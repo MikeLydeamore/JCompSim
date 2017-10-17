@@ -3,7 +3,7 @@
 #include <json.hpp>
 #include <iostream>
 #include <fstream>
-//#include "MarkovChain/json/ModelJson.cpp"
+#include "MarkovChain/json/ModelJson.cpp"
 #include "ModelChickenFlu.cpp"
 
 namespace po = boost::program_options;
@@ -46,7 +46,7 @@ int main(int argc, char *argv[]) {
 
   using T = int;
 
-  /*if (vm.count("states") && vm.count("transitions")) {
+  if (vm.count("states") && vm.count("transitions")) {
     std::ifstream states_file(statesFilename);
     json states_json;
     states_file >> states_json;
@@ -86,7 +86,7 @@ int main(int argc, char *argv[]) {
     chain.solve(chain.SOLVER_TYPE_GILLESPIE);
     return 0;
   }
-  */
+  
   MarkovChain<T> chain;
   ModelChickenFlu<T> model;
   double max_t2 = 1000;
