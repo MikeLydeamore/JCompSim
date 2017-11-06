@@ -98,6 +98,7 @@ public:
 
   virtual double getRate(state_values<T> states)
   {
+    //std::cout << this->mSource_state << std::endl;
     return (this->mParameters["parameter"] * states[this->mSource_state]);
   }
 
@@ -194,6 +195,18 @@ public:
     }
 
     return ( (this->mParameters["parameter"] * states[this->mSource_state] * mass)/population_size );
+  }
+};
+
+template<class T>
+class TransitionConstant : public TransitionIndividual<T>
+{
+public:
+  TransitionConstant(std::string source_state, std::string destination_state, double parameter) : TransitionIndividual<T>(source_state, destination_state, parameter) {}
+
+  virtual double getRate(state_values<T> states)
+  {
+    return (this->mParameters["parameter"]*(states[this->mSource_state] > 0));
   }
 };
 

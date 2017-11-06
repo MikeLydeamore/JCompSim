@@ -120,6 +120,11 @@ private:
             rChain.addTransition(new TransitionIndividual<T>(transition.getSourceState(), 
                                                              transition.getDestinationState(),
                                                              transition.getSingleParameter()));
+        } else if (transition.getTransitionType() == "constant")
+        {
+            rChain.addTransition(new TransitionConstant<T>(transition.getSourceState(),
+                                                           transition.getDestinationState(),
+                                                           transition.getSingleParameter()));
         }
     }
 
