@@ -265,6 +265,8 @@ class MarkovChain
         mpSerialiser->serialiseHeader(y.getMap());
         double t = 0;
         double h = 1.0/120;
+        if (T_MAX < 5)
+            h = 1.0/(5000*T_MAX);
         while (t < T_MAX)
         {
             mpSerialiser->serialise(t, y.getMap());
@@ -319,7 +321,7 @@ class MarkovChain
 
     const static int SOLVER_TYPE_GILLESPIE = 1;
 
-    void addState(std::string state_name, int initial_value) {
+    void addState(std::string state_name, T initial_value) {
         states[state_name] = initial_value;
     }
 

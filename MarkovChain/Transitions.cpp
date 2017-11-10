@@ -206,7 +206,7 @@ public:
 
   virtual double getRate(state_values<T> states)
   {
-    return (this->mParameters["parameter"]*(states[this->mSource_state] > 0));
+    return (this->mParameters["parameter"]*((double) states[this->mSource_state] > 0));
   }
 };
 

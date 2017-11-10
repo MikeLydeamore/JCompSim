@@ -97,6 +97,7 @@ int main(int argc, char *argv[]) {
   
   MarkovChain<T> chain;
   ModelChickenFlu<T> model;
+  
   double max_t2 = 1000;
   double dt2 = 0.5;
   std::vector<double> serialiser_times(max_t2/dt + 1);
