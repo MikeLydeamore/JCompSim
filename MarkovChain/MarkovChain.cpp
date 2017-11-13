@@ -286,6 +286,80 @@ class MarkovChain
         mpSerialiser->serialiseFinally(t, y.getMap());
     }
 
+    void solveRKD5()
+    {
+        DeterministicStateType y(states);
+        mpSerialiser->serialiseHeader(y.getMap());
+        double t = 0;
+        double tol = 0.00001;
+        
+        double a21 = 1.0/5.0; 
+        double a31 = 3.0/40.0; double a32 = 9.0/40.0;
+        double a41 = 44.0/45.0; double a42 = -56.0/15.0; double a43 = 32.0/9.0;
+        double a51 = 19372.0/6561.0; double a52 = -25360.0/2187.0; double a53 = 64448.0/6561.0; double a54 = -212.0/729.0;
+        double a61 = 9017.0/3168.0; double a62 = -355.0/33.0; double a63 = 46732.0/5247.0; double a64 = 49.0/176.0; double a65 = -5103.0/18656.0;
+        double a71 = 35.0/384.0; double a72 = 0.0; double a73 = 500.0/1113.0; double a74 = 125.0/192.0; double a75 = -2187.0/6784.0; double a76 = 11.0/84.0;
+
+        double c2 = 1.0/5.0; double c3 = 3.0/10.0; double c4 = 4.0/5.0; double c5 = 8.0/9.0; double c6 = 1; double c7 = 1;
+
+        double b1 = 35.0/384.0; double b2 = 0; double b3 = 500.0/1113.0; double b4 = 125.0/192.0; double b5 = -2187.0/6784.0; double b6 = 11.0/84.0; double b7 = 0;
+
+        double b1p = 5179.0/57600.0; double b2p = 0; double b3p = 7571.0/16695.0; double b4p = 393.0/640.0; double b5p = -92097.0/339200.0; double b6p = 187.0/2100.0; double b7p = 1.0/40.0;
+
+        double h = 1;
+
+        while (t < T_MAX)
+        {
+            DeterministicStateType k_1;
+            DeterministicStateType k_2;
+            DeterministicStateType k_3;
+            DeterministicStateType k_4;
+            DeterministicStateType k_5;
+            DeterministicStateType k_6;
+            DeterministicStateType k_7;
+    
+            derivative(y, k_1, t);
+            derivative(y+h*(a21*k_1), k_2, t+c2*h);
+            derivative(y+h*(a31*k_1 + a32*k_2), k_3, t+c3*h);
+            derivative(y+h*(a41*k_1 + a42*k_2 + a43*k_3), k_4, t+c4*h);
+            derivative(y+h*(a51*k_1 + a52*k_2 + a53*k_3 + a54*k_4), k_5, t+c5*h);
+            derivative(y+h*(a61*k_1 + a62*k_2 + a63*k_3 + a64*k_4 + a65*k_5), k_6, t+c6*h);
+            derivative(y+h*(a71*k_1 + a72*k_2 + a73*k_3 + a74*k_4 + a75*k_5 + a76*k_6), k_7, t+c7*h);
+    
+            DeterministicStateType yn = y + h * (b1*k_1 + b3*k_3 + b4*k_4 + b5*k_5 + b6*k_6);
+            DeterministicStateType ynstar = y + h * (b1p*k_1 + b3p*k_3 + b4p*k_4 + b5p*k_5 + b6p*k_6 + b7p*k_7);
+            DeterministicStateType diff = yn + (-1 * ynstar);
+            double error = 0;
+            for (auto &p : diff.getMap())
+            {
+                error += (p.second * p.second);
+            }
+            error = pow(error, 0.5);
+
+            double delta = 0.84 * pow(tol / error, (1.0/5.0));
+    
+            if (error < tol)
+            {
+                mpSerialiser->serialise(t, y.getMap());
+                t += h;
+                y += h*(b1*k_1 + b3*k_3 + b4*k_4 + b5*k_5 + b6*k_6);
+            }
+    
+            if (delta <= 0.1)
+            {
+                h *= 0.1;
+            } else if (delta >= 4.0)
+            {
+                h *= 4.0;
+            } else
+            {
+                h *= delta;
+            }
+        }
+       
+        mpSerialiser->serialiseFinally(t, y.getMap());
+    }
+
     void solveForwardEuler()
     {
         DeterministicStateType y0(states);
@@ -342,7 +416,7 @@ class MarkovChain
             solveGillespie();
         } else
         {
-            solveRK4();
+            solveRKD5();
         }
     }
 

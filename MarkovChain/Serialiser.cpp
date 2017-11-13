@@ -104,7 +104,6 @@ public:
     
     virtual void serialise(double t, state_values<T> states) {
         double next_time = *mSerialiseTimes.begin();
-        
         while (t > next_time && !mSerialiseTimes.empty()) {
             //Interpolate between the points.
             state_values<T> interpolated_states;
@@ -123,6 +122,6 @@ public:
 
     virtual void serialiseFinally(double t, state_values<T> states)
     {
-        SerialiserFile<T>::serialise(t, states);
+        serialise(t, states);
     }
 };

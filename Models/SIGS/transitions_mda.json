@@ -30,14 +30,14 @@
   {
     "source_state": "G",
     "destination_state": "S",
-    "parameter": 133.516,
+    "parameter": 133.5336,
     "transition_type": "constant",
     "governing_states": {}
   },
   {
     "source_state": "I",
     "destination_state": "G",
-    "parameter": 83.752,
+    "parameter": 83.7632,
     "transition_type": "constant",
     "governing_states": {}
   }
