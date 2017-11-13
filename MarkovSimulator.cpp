@@ -4,7 +4,6 @@
 #include <iostream>
 #include <fstream>
 #include "MarkovChain/json/ModelJson.cpp"
-#include "ModelChickenFlu.cpp"
 
 namespace po = boost::program_options;
 using json = nlohmann::json;
@@ -95,21 +94,5 @@ int main(int argc, char *argv[]) {
     return 0;
   }
   
-  MarkovChain<T> chain;
-  ModelChickenFlu<T> model;
-  
-  double max_t2 = 1000;
-  double dt2 = 0.5;
-  std::vector<double> serialiser_times(max_t2/dt + 1);
-  double n = {-1*dt2};
-  std::generate(serialiser_times.begin(), serialiser_times.end(), [&n, dt2]{ return n += dt2; });
-
-  SerialiserPredefinedTimesFile<T> serialiserPredefinedTimesFile(serialiser_times, filename);
-  model.setupModel(chain);
-  chain.setMaxTime(1000);
-  chain.setSerialiser(&serialiserPredefinedTimesFile);
-
-  chain.solve(-1);
-
   return 0;
 }
