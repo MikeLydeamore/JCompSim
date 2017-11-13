@@ -11,9 +11,120 @@
 #include <boost/random/mersenne_twister.hpp>
 #include <boost/random/uniform_real_distribution.hpp>
 #include <boost/random.hpp>
+#include <boost/numeric/odeint.hpp>
+#include <boost/operators.hpp>
 #include "StateValues.h"
 #include "Transitions.cpp"
 #include "Serialiser.cpp"
+#include <functional>
+
+namespace pl = std::placeholders;
+
+namespace Deterministic {
+    
+        class State : boost::additive1<State,
+                          boost::additive2<State, double, 
+                              boost::multiplicative2<State, double> > >
+        {
+          public:
+            using Map = std::map<std::string, double>;
+            State(Map const& map) : mMap(map) {}
+            State() = default;
+            State(const State &p) = default;
+            State &operator=(State const&a) = default;
+            
+            void addToKey(std::string key, double a)
+            {
+                mMap[key] += a;
+            }
+
+            State &operator+=(const State &p) {
+                for (auto& p : p.mMap) mMap[p.first] += p.second;
+                return *this;
+            }
+    
+            State &operator+=(double a) {
+                for (auto& p : mMap)
+                    p.second += a;
+                return *this;
+            }
+    
+            State &operator*=(double f) {
+                for (auto& p : mMap) mMap[p.first] *= f;
+                return *this;
+            }
+    
+            friend State abs(const State &p) {
+                using std::abs;
+                auto map = p.mMap;
+    
+                for(auto& e : map)
+                    e.second = abs(e.second);
+    
+                return map;
+            }
+    
+            friend State operator/(const State &p1, const State &p2) {
+                auto map = p1.mMap;
+    
+                for(auto& e : map)
+                    e.second /= p2.mMap.at(e.first);
+    
+                return map;
+            }
+    
+            friend double vector_space_norm_inf_impl(State const& p) {
+                double max = 0;
+                using std::abs;
+                for (auto& el : p.mMap)
+                    max = std::max(abs(el.second), max);
+                return max;
+            }
+    
+            size_t size() const { return mMap.size(); }
+    
+            void resize(State const& other) {
+                for (auto& el : other.mMap)
+                    mMap[el.first] += 0; // inserts if non-existent
+            }
+
+            Map getMap() const
+            {
+                return (mMap);
+            }
+    
+          private:
+            Map mMap;
+        };
+    }
+    
+using DeterministicStateType = Deterministic::State;
+
+namespace boost { namespace numeric { namespace odeint {
+    template <> struct vector_space_norm_inf<DeterministicStateType> {
+        typedef double result_type;
+        double operator()(const DeterministicStateType &p) const { return vector_space_norm_inf_impl(p); }
+    };
+
+    template <> struct is_resizeable<DeterministicStateType> {
+        typedef boost::true_type type;
+        const static bool value = type::value;
+    };
+
+    template <> struct same_size_impl<DeterministicStateType, DeterministicStateType> {
+        static bool same_size(const DeterministicStateType &v1, const DeterministicStateType &v2) {
+            return v1.size() == v2.size();
+        }
+    };
+
+    template <> struct resize_impl<DeterministicStateType, DeterministicStateType> {
+        static void resize(DeterministicStateType &v1, const DeterministicStateType &v2) {
+            v1.resize(v2);
+        }
+    };
+} } }
+
+using namespace boost::numeric::odeint;
 
 template<class T>
 class MarkovChain
@@ -34,6 +145,8 @@ class MarkovChain
     double T_MAX = 500;
     std::string filename;
     Serialiser<T> *mpSerialiser;
+
+   
 
     void solveGillespie()
     {
@@ -72,12 +185,18 @@ class MarkovChain
                 assert(it->second >= 0);
                 actual_size += it->second;
             }
-            assert(actual_size == population_size);
+            //assert(actual_size == population_size);
 
             std::vector<double> rates(transitions.size());
             for (int i = 0; i < transitions.size(); i++)
             {
-                rates[i] = transitions[i].getRate(states);
+                rates[i] = transitions[i]->getRate(states);
+                if (rates[i] < 0.0 || isnan(rates[i]))
+                {
+                    std::cout << "Transition from " << transitions[i]->getSourceState() << " to " << transitions[i]->getDestinationState() << " has rate " << rates[i] << std::endl;
+                    exit(-1);
+                }
+                assert(rates[i] >= 0);
             }
             double rates_sum = std::accumulate(rates.begin(), rates.end(), (double)0.0);
 
@@ -104,60 +223,95 @@ class MarkovChain
             {
                 eventOccurred++;
             }
-            transitions[eventOccurred].do_transition(states);
-
+            transitions[eventOccurred]->do_transition(states);
             mpSerialiser->serialise(t, states);
         }
         mpSerialiser->serialiseFinally(t, states);
     }
+
     
-    /*void solveDeterministic() {
-        
-
-        //Contains the State keys in order. state_mappings[index] will give the index in the array of states.
-        std::map<int, std::string> state_mappings;
-        
-        int i = 0;
-        for (Iterator it = states.begin(), it != states.end(); ++it) {
-            state_mappings[i] = it->first;
-            i++;
+    void derivative(const DeterministicStateType p, DeterministicStateType &dpdt, const double t) 
+    {
+        for (int i = 0 ; i < transitions.size(); i++) 
+        {
+            dpdt.addToKey(transitions[i]->getSourceState(), -1*transitions[i]->getRate(p.getMap()));
+            dpdt.addToKey(transitions[i]->getDestinationState(), transitions[i]->getRate(p.getMap()));
         }
-        
-    }*/
+    }
 
-    /*void derivative(const state_array p, state_array &dpdt, const double t) {
-        std::map<std::string, double> dpdt_map;
-        
-        int i = 0;
-        for (Iterator it = p.begin(); it != p.end(); ++it) {
-            //Update states with current position.
-            states[state_mappings[i]] = it;
+    void serialiserDeterministic(const DeterministicStateType &p, const double t)
+    {
+        mpSerialiser->serialise(t, p.getMap());
+    }
 
-            //Initialize map to have all the relevant keys.
-            dpdt_map[state_mappings[i]] = 0;
+    void solveDeterministic() 
+    {
+        DeterministicStateType x0(states);
+        typedef runge_kutta_cash_karp54<DeterministicStateType, double, DeterministicStateType, double, vector_space_algebra>
+            rkck54;
 
-            i++;
+        //typedef controlled_runge_kutta< rkck54, double, DeterministicStateType, double, vector_space_algebra > ctrl_rkck54;
+        mpSerialiser->serialiseHeader(x0.getMap());
+        integrate_adaptive(make_controlled(1e-10, 1e-6, rkck54()), std::bind(&MarkovChain::derivative, *this , pl::_1 , pl::_2 , pl::_3 ), x0, 0.0,
+                           T_MAX, 0.1,
+                        std::bind(&MarkovChain::serialiserDeterministic, *this, pl::_1, pl::_2));
+
+        mpSerialiser->serialiseFinally(T_MAX, x0.getMap());
+    }
+
+    void solveRK4()
+    {
+        DeterministicStateType y(states);
+        mpSerialiser->serialiseHeader(y.getMap());
+        double t = 0;
+        double h = 1.0/120;
+        if (T_MAX < 5)
+            h = 1.0/(5000*T_MAX);
+        while (t < T_MAX)
+        {
+            mpSerialiser->serialise(t, y.getMap());
+            DeterministicStateType k_1;
+            DeterministicStateType k_2;
+            DeterministicStateType k_3;
+            DeterministicStateType k_4;
+            derivative(y, k_1, t);
+            derivative(y+(h/2)*k_1, k_2, t+(h/2));
+            derivative(y+(h/2)*k_2, k_3, t+(h/2));
+            derivative(y+h*k_3, k_4, t+h);
+            
+            y += (h/6)*(k_1+2*k_2+2*k_3+k_4);
+            t += h;
         }
 
-        for (Transition transition : transitions) {
-            dpdt_map[transition.getSourceState()] -= transition.getRate(states);
-            dpdt_map[transition.getDestinationState()] += transition.getRate(states);
+        mpSerialiser->serialiseFinally(t, y.getMap());
+    }
+
+    void solveForwardEuler()
+    {
+        DeterministicStateType y0(states);
+
+        double t = 0;
+        double h = 1.0/120.0;
+        mpSerialiser->serialiseHeader(y0.getMap());
+        while (t < T_MAX)
+        {
+            mpSerialiser->serialise(t, y0.getMap());
+            DeterministicStateType dpdt;
+            derivative(y0, dpdt, t);
+            //std::cout << y0.getMap()["S"] << std::endl;
+            y0 += h * dpdt;
+
+            t += h;
         }
 
-        //convert map back into state_array
-        i = 0;
-        for (Iterator it = dpdt_map.begin(); it != dpdt_map.end(); ++it) {
-            dpdt[i] = it->second;
-            i++;
-        }
-
-    }*/
+        mpSerialiser->serialiseFinally(t, y0.getMap());
+    }
 
 
   protected:
     state_values<T> states;
 
-    std::vector<Transition<T> > transitions;
+    std::vector<Transition<T>* > transitions;
 
   public:
 
@@ -167,11 +321,15 @@ class MarkovChain
 
     const static int SOLVER_TYPE_GILLESPIE = 1;
 
-    void addState(std::string state_name, int initial_value) {
+    void addState(std::string state_name, T initial_value) {
         states[state_name] = initial_value;
     }
 
-    void addTransition(Transition<T> transition) {
+    void addTransition(Transition<T> *transition) {
+        double two_decimals = round(100/transition->getSingleParameter())/100;
+        std::cout << ("Adding transition from " + transition->getSourceState() + " to " 
+        + transition->getDestinationState() + " at rate " + std::to_string(transition->getSingleParameter()) 
+        + " (1/") << std::setprecision(2) << std::fixed << two_decimals << ")" << std::endl;
         transitions.push_back(transition);
     }
 
@@ -182,8 +340,12 @@ class MarkovChain
     void solve(int solver_type) {
         if (solver_type == SOLVER_TYPE_GILLESPIE) {
             solveGillespie();
+        } else
+        {
+            solveRK4();
         }
     }
 
     
 };
+

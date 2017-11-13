@@ -43,6 +43,7 @@ public:
             mOutputfile << "," << it->second;
         }
         mOutputfile << "\n";
+        mOutputfile.flush();
     }
 
     virtual void serialiseHeader(state_values<T> states) {
@@ -52,6 +53,7 @@ public:
             mOutputfile << "," << it->first;
         }
         mOutputfile << "\n";
+        mOutputfile.flush();
     }
 
     virtual void serialiseFinally(double t, state_values<T> states) {}
@@ -95,6 +97,7 @@ class SerialiserPredefinedTimesFile : public SerialiserFile<T> {
 private:
     std::vector<double> mSerialiseTimes;
     state_values<T> mLastState;
+    double mLastT;
 
 public:
     SerialiserPredefinedTimesFile(std::vector<double> serialiseTimes, std::string filename) : SerialiserFile<T>(filename), mSerialiseTimes(serialiseTimes) {}
@@ -103,10 +106,23 @@ public:
         double next_time = *mSerialiseTimes.begin();
         
         while (t > next_time && !mSerialiseTimes.empty()) {
-            SerialiserFile<T>::serialise(next_time, mLastState);
+            //Interpolate between the points.
+            state_values<T> interpolated_states;
+            for (auto &p : states)
+            {
+                double slope = ( (double) p.second - mLastState[p.first]) / (t - mLastT);
+                interpolated_states[p.first] = slope * (next_time - mLastT) + mLastState[p.first];
+            }
+            SerialiserFile<T>::serialise(next_time, interpolated_states);
             mSerialiseTimes.erase(mSerialiseTimes.begin());
             next_time = *mSerialiseTimes.begin();
         }
         mLastState = states;
+        mLastT = t;
+    }
+
+    virtual void serialiseFinally(double t, state_values<T> states)
+    {
+        SerialiserFile<T>::serialise(t, states);
     }
 };

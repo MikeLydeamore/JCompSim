@@ -4,7 +4,7 @@
 #include <iostream>
 #include <fstream>
 #include "MarkovChain/json/ModelJson.cpp"
-#include "ModelSIRWS.cpp"
+#include "ModelChickenFlu.cpp"
 
 namespace po = boost::program_options;
 using json = nlohmann::json;
@@ -18,6 +18,7 @@ int main(int argc, char *argv[]) {
   std::string serialiserType;
   double max_t = 50;
   double dt = 0.001;
+  std::string solver;
 
   po::options_description desc("Allowed options");
   desc.add_options()
@@ -28,6 +29,7 @@ int main(int argc, char *argv[]) {
       ("serialiser", po::value<std::string>(&serialiserType), "serialiser type")
       ("maxt", po::value<double>(&max_t), "maximum simulation time")
       ("dt", po::value<double>(&dt), "time step for serialising")
+      ("solver", po::value<std::string>(&solver), "solver type");
   ;
 
   po::variables_map vm;
@@ -44,7 +46,7 @@ int main(int argc, char *argv[]) {
     return (-1);
   }
 
-  using T = int;
+  using T = double;
 
   if (vm.count("states") && vm.count("transitions")) {
     std::ifstream states_file(statesFilename);
@@ -83,18 +85,31 @@ int main(int argc, char *argv[]) {
     ModelJson<T> model(states_json, transitions_json);
     model.setupModel(chain);
     
-    chain.solve(chain.SOLVER_TYPE_GILLESPIE);
+    if (solver == "stochastic")
+    {
+      chain.solve(MarkovChain<T>::SOLVER_TYPE_GILLESPIE);
+    } else
+    {
+      chain.solve(-1);
+    }
     return 0;
   }
   
   MarkovChain<T> chain;
-  ModelSIRWS<T> model;
-  SerialiserFile<T> serialiser2(filename);
-  model.setupModel(chain);
-  chain.setMaxTime(100);
-  chain.setSerialiser(&serialiser2);
+  ModelChickenFlu<T> model;
+  
+  double max_t2 = 1000;
+  double dt2 = 0.5;
+  std::vector<double> serialiser_times(max_t2/dt + 1);
+  double n = {-1*dt2};
+  std::generate(serialiser_times.begin(), serialiser_times.end(), [&n, dt2]{ return n += dt2; });
 
-  chain.solve(chain.SOLVER_TYPE_GILLESPIE);
+  SerialiserPredefinedTimesFile<T> serialiserPredefinedTimesFile(serialiser_times, filename);
+  model.setupModel(chain);
+  chain.setMaxTime(1000);
+  chain.setSerialiser(&serialiserPredefinedTimesFile);
+
+  chain.solve(-1);
 
   return 0;
 }

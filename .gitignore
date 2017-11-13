@@ -8,7 +8,15 @@ MarkovChainSimulator
 *.csv
 *.m
 *.swp
+*.swo
 runSISManyTimes
 pretty.json
-states.json
 .DS_Store
+c_cpp_properties.json
+releases/0.0.1/run.sh
+releases/MarkovChainSimulator-0.0.1.zip
+staticlibs/libboost_program_options.a
+staticlibs/libboost_program_options-mt.a
+.DS_Store
+releases/*
+Models/Chickens/ModelChickenFlu.cpp
