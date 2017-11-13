@@ -19,3 +19,4 @@ staticlibs/libboost_program_options.a
 staticlibs/libboost_program_options-mt.a
 .DS_Store
 releases/*
+Models/Chickens/ModelChickenFlu.cpp
