@@ -142,63 +142,63 @@
   {
     "source_state": "IA",
     "destination_state": "S",
-    "parameter": 8.1314e-13,
+    "parameter": 3.5471e-11,
     "transition_type": "constant",
     "governing_states": {}
   },
   {
     "source_state": "IAHat",
     "destination_state": "GHat",
-    "parameter": 2.0256e-11,
+    "parameter": -2.1041e-08,
     "transition_type": "constant",
     "governing_states": {}
   },
   {
     "source_state": "IHat",
     "destination_state": "GHat",
-    "parameter": 4.5807e-11,
+    "parameter": -1.3164e-08,
     "transition_type": "constant",
     "governing_states": {}
   },
   {
     "source_state": "YHat",
     "destination_state": "GHat",
-    "parameter": 23.6078,
+    "parameter": 23.6697,
     "transition_type": "constant",
     "governing_states": {}
   },
   {
     "source_state": "I2CHat",
     "destination_state": "GHat",
-    "parameter": 66.7222,
+    "parameter": 66.7138,
     "transition_type": "constant",
     "governing_states": {}
   },
   {
     "source_state": "I2Hat",
     "destination_state": "GHat",
-    "parameter": 13.3716,
+    "parameter": 13.3816,
     "transition_type": "constant",
     "governing_states": {}
   },
   {
     "source_state": "Y",
     "destination_state": "S2",
-    "parameter": 40.7566,
+    "parameter": 40.7929,
     "transition_type": "constant",
     "governing_states": {}
   },
   {
     "source_state": "M",
     "destination_state": "S2",
-    "parameter": 87.8776,
+    "parameter": 87.8048,
     "transition_type": "constant",
     "governing_states": {}
   },
   {
     "source_state": "I2C",
     "destination_state": "S2",
-    "parameter": 2.8852,
+    "parameter": 2.8826,
     "transition_type": "constant",
     "governing_states": {}
   },
