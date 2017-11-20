@@ -21,3 +21,7 @@ staticlibs/libboost_program_options-mt.a
 releases/*
 Models/Chickens/ModelChickenFlu.cpp
 outputs/*
+outputs/FullModel/initialcondition.json
+.RData
+.Rhistory
+sirspeedtest

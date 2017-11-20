@@ -400,10 +400,10 @@ class MarkovChain
     }
 
     void addTransition(Transition<T> *transition) {
-        double two_decimals = round(100/transition->getSingleParameter())/100;
-        std::cout << ("Adding transition from " + transition->getSourceState() + " to " 
-        + transition->getDestinationState() + " at rate " + std::to_string(transition->getSingleParameter()) 
-        + " (1/") << std::setprecision(2) << std::fixed << two_decimals << ")" << std::endl;
+        //double two_decimals = round(100/transition->getSingleParameter())/100;
+        //std::cout << ("Adding transition from " + transition->getSourceState() + " to " 
+        //+ transition->getDestinationState() + " at rate " + std::to_string(transition->getSingleParameter()) 
+        //+ " (1/") << std::setprecision(2) << std::fixed << two_decimals << ")" << std::endl;
         transitions.push_back(transition);
     }
 

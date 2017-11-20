@@ -2,42 +2,42 @@
   {
     "source_state": "S",
     "destination_state": "I",
-    "parameter": 7.936e-06,
+    "parameter": 7.5101e-06,
     "transition_type": "mass-action",
     "governing_states": ["I"]
   },
   {
     "source_state": "I",
     "destination_state": "G",
-    "parameter": 0.0124,
+    "parameter": 0.0121,
     "transition_type": "individual",
     "governing_states": {}
   },
   {
     "source_state": "G",
     "destination_state": "I",
-    "parameter": 0.0194,
+    "parameter": 0.0201,
     "transition_type": "individual",
     "governing_states": {}
   },
   {
     "source_state": "G",
     "destination_state": "S",
-    "parameter": 0.0124,
+    "parameter": 0.0121,
     "transition_type": "individual",
     "governing_states": {}
   },
   {
     "source_state": "G",
     "destination_state": "S",
-    "parameter": 133.5336,
+    "parameter": 134.108,
     "transition_type": "constant",
     "governing_states": {}
   },
   {
     "source_state": "I",
     "destination_state": "G",
-    "parameter": 83.7632,
+    "parameter": 87.952,
     "transition_type": "constant",
     "governing_states": {}
   }
