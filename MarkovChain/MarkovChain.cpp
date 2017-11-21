@@ -223,7 +223,7 @@ class MarkovChain
             {
                 eventOccurred++;
             }
-            transitions[eventOccurred]->do_transition(states);
+            transitions[eventOccurred]->do_transition(t, states);
             mpSerialiser->serialise(t, states);
         }
         mpSerialiser->serialiseFinally(t, states);

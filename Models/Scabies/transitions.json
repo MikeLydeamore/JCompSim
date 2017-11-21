@@ -2,7 +2,7 @@
 	{
 		"source_state": "S",
 		"destination_state": "IA",
-		"parameter": 0.00001587,
+		"parameter": 8.3e-6,
 		"transition_type": "mass-action",
 		"governing_states": ["IA", "IAHat", "IHat", "I2C", "I2CHat", "I2", "I2Hat"]
 	},
@@ -51,7 +51,7 @@
     {
         "source_state": "S2",
         "destination_state": "I2",
-        "parameter": 0.000007935,
+        "parameter": 4.16e-6,
         "transition_type": "mass-action",
         "governing_states": ["IA", "IAHat", "IHat", "I2C", "I2CHat", "I2", "I2Hat"]
     },

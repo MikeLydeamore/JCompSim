@@ -46,7 +46,7 @@ public:
     mDestination_state = destination_state;
   }
 
-  virtual void do_transition (state_values<T> &rStates) = 0;
+  virtual void do_transition (double t, state_values<T> &rStates) = 0;
 
   virtual double getRate(state_values<T> states) = 0;
 
@@ -102,7 +102,7 @@ public:
     return (this->mParameters["parameter"] * states[this->mSource_state]);
   }
 
-  virtual void do_transition(state_values<T> &rStates) {
+  virtual void do_transition(double t, state_values<T> &rStates) {
     rStates[this->mSource_state] -= 1;
     rStates[this->mDestination_state] += 1;
   }
@@ -126,7 +126,7 @@ public:
     return (this->mParameters["parameter"] * states[this->mSource_state] * mass);
   }
 
-  virtual void do_transition(state_values<T> &rStates)
+  virtual void do_transition(double t, state_values<T> &rStates)
   {
     rStates[this->mSource_state] -= 1;
     rStates[this->mDestination_state] += 1;
@@ -141,7 +141,7 @@ public:
     : TransitionIndividual<T>(source_state, "Void", parameter)
     {}
   
-  virtual void do_transition(state_values<T> &rStates)
+  virtual void do_transition(double t, state_values<T> &rStates)
   {
     rStates[this->mSource_state] -= 1;
   }
@@ -160,7 +160,7 @@ public:
     return (this->mpGetActualRate(states, this->mParameters));
   }
 
-  virtual void do_transition(state_values<T> &rStates)
+  virtual void do_transition(double t, state_values<T> &rStates)
   {
     rStates[this->mDestination_state] += 1;
   }
