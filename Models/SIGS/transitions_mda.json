@@ -1,44 +1,57 @@
 [
-  {
-    "source_state": "S",
-    "destination_state": "I",
-    "parameter": 7.5101e-06,
-    "transition_type": "mass-action",
-    "governing_states": ["I"]
-  },
-  {
-    "source_state": "I",
-    "destination_state": "G",
-    "parameter": 0.0121,
-    "transition_type": "individual",
-    "governing_states": {}
-  },
-  {
-    "source_state": "G",
-    "destination_state": "I",
-    "parameter": 0.0201,
-    "transition_type": "individual",
-    "governing_states": {}
-  },
-  {
-    "source_state": "G",
-    "destination_state": "S",
-    "parameter": 0.0121,
-    "transition_type": "individual",
-    "governing_states": {}
-  },
-  {
-    "source_state": "G",
-    "destination_state": "S",
-    "parameter": 134.108,
-    "transition_type": "constant",
-    "governing_states": {}
-  },
-  {
-    "source_state": "I",
-    "destination_state": "G",
-    "parameter": 87.952,
-    "transition_type": "constant",
-    "governing_states": {}
-  }
+                                                                                                             {
+                                                                                                                                                                                                                          "source_state": "S",
+                                                                                                                                                                                                                          "destination_state": "I",
+                                                                                                                                                                                                                          "parameter": 0.098518,
+                                                                                                                                                                                                                          "transition_type": "mass-action",
+                                                                                                                                                                                                                          "governing_states": [
+                                                                                                                                                                                                                                                                                                                                       "I"
+                                                                                                                                                                                                                          ]
+                                                                                                             },
+                                                                                                             {
+                                                                                                                                                                                                                          "source_state": "I",
+                                                                                                                                                                                                                          "destination_state": "G",
+                                                                                                                                                                                                                          "parameter": 0.02938,
+                                                                                                                                                                                                                          "transition_type": "individual",
+                                                                                                                                                                                                                          "governing_states": {
+
+                                                                                                                                                                                                                          }
+                                                                                                             },
+                                                                                                             {
+                                                                                                                                                                                                                          "source_state": "G",
+                                                                                                                                                                                                                          "destination_state": "I",
+                                                                                                                                                                                                                          "parameter": 1e-10,
+                                                                                                                                                                                                                          "transition_type": "individual",
+                                                                                                                                                                                                                          "governing_states": {
+
+                                                                                                                                                                                                                          }
+                                                                                                             },
+                                                                                                             {
+                                                                                                                                                                                                                          "source_state": "G",
+                                                                                                                                                                                                                          "destination_state": "S",
+                                                                                                                                                                                                                          "parameter": 0.02938,
+                                                                                                                                                                                                                          "transition_type": "individual",
+                                                                                                                                                                                                                          "governing_states": {
+
+                                                                                                                                                                                                                          }
+                                                                                                             },
+                                                                                                             {
+                                                                                                                                                                                                                          "source_state": "G",
+                                                                                                                                                                                                                          "destination_state": "S",
+                                                                                                                                                                                                                          "parameter": 399.796,
+                                                                                                                                                                                                                          "transition_type": "constant",
+                                                                                                                                                                                                                          "governing_states": {
+
+                                                                                                                                                                                                                          }
+                                                                                                             },
+                                                                                                             {
+                                                                                                                                                                                                                          "source_state": "I",
+                                                                                                                                                                                                                          "destination_state": "G",
+                                                                                                                                                                                                                          "parameter": 399.9632,
+                                                                                                                                                                                                                          "transition_type": "constant",
+                                                                                                                                                                                                                          "governing_states": {
+
+                                                                                                                                                                                                                          }
+                                                                                                             }
 ]
+

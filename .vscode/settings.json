@@ -59,6 +59,9 @@
         "map": "cpp",
         "set": "cpp",
         "string_view": "cpp",
-        "vector": "cpp"
+        "vector": "cpp",
+        "__config": "cpp",
+        "__nullptr": "cpp",
+        "algorithm": "cpp"
     }
 }

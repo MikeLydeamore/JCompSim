@@ -4,8 +4,7 @@
 #include <string>
 #include <map>
 
-template<class T>
-using state_values = std::map<std::string, T>;
+using state_values = std::map<std::string, double>;
 
 #endif
 

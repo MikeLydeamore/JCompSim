@@ -1,8 +1,9 @@
 #include <json.hpp>
+#include "../MarkovChain.hpp"
 
 using json = nlohmann::json;
 
-template<class T>
+
 class TransitionJson {
 private:
     std::string mSource_state;
@@ -67,8 +68,8 @@ public:
     }
 };
 
-template<class T>
-void to_json(json &j, const TransitionJson<T> &transition) 
+
+void to_json(json &j, const TransitionJson &transition) 
 {
     if (transition.getTransitionType() == "mass-action")
     {
@@ -87,8 +88,8 @@ void to_json(json &j, const TransitionJson<T> &transition)
   
 }
 
-template<class T>
-void from_json(const json &j, TransitionJson<T> &transition) 
+
+void from_json(const json &j, TransitionJson &transition) 
 {
   transition.setSourceState(j.at("source_state").get<std::string>());
   transition.setDestinationState(j.at("destination_state").get<std::string>());
@@ -100,29 +101,29 @@ void from_json(const json &j, TransitionJson<T> &transition)
   }
 }
 
-template<class T>
+
 class ModelJson {
 
 private:
-    std::map<std::string, T> states;
-    std::vector<TransitionJson<T> > transitions;
+    std::map<std::string, double> states;
+    std::vector<TransitionJson > transitions;
 
-    void addTransitionJson(MarkovChain<T> &rChain, TransitionJson<T> transition)
+    void addTransitionJson(MarkovChain &rChain, TransitionJson transition)
     {
         if (transition.getTransitionType() == "mass-action")
         {
-            rChain.addTransition(new TransitionMassAction<T>(transition.getSourceState(), 
+            rChain.addTransition(new TransitionMassAction(transition.getSourceState(), 
                                                              transition.getDestinationState(),
                                                              transition.getSingleParameter(),
                                                              transition.getGoverningStates()));
         } else if (transition.getTransitionType() == "individual")
         {
-            rChain.addTransition(new TransitionIndividual<T>(transition.getSourceState(), 
+            rChain.addTransition(new TransitionIndividual(transition.getSourceState(), 
                                                              transition.getDestinationState(),
                                                              transition.getSingleParameter()));
         } else if (transition.getTransitionType() == "constant")
         {
-            rChain.addTransition(new TransitionConstant<T>(transition.getSourceState(),
+            rChain.addTransition(new TransitionConstant(transition.getSourceState(),
                                                            transition.getDestinationState(),
                                                            transition.getSingleParameter()));
         }
@@ -134,15 +135,15 @@ public:
             states[it.key()] = it.value();
         }
 
-        transitions = transitions_json.get<std::vector<TransitionJson<T> > >();
+        transitions = transitions_json.get<std::vector<TransitionJson > >();
     }
 
-    void setupModel(MarkovChain<T> &rChain) {
-        for(typename std::map<std::string, T>::iterator it = states.begin() ; it != states.end() ; it++) {
+    void setupModel(MarkovChain &rChain) {
+        for(typename std::map<std::string, double>::iterator it = states.begin() ; it != states.end() ; it++) {
             rChain.addState(it->first, it->second);
         }
 
-        for(typename std::vector<TransitionJson<T> >::iterator it = transitions.begin() ; it != transitions.end() ; it++) {
+        for(typename std::vector<TransitionJson >::iterator it = transitions.begin() ; it != transitions.end() ; it++) {
             addTransitionJson(rChain, *it);
         }
     }
