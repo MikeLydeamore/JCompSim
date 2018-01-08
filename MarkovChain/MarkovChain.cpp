@@ -172,7 +172,7 @@ void MarkovChain::solveGillespie()
     NumberDistribution distribution(0, 1);
     RandomNumberGenerator generator;
     Generator runif(generator, distribution);
-    unsigned long seed = mix(clock(), time(NULL), getpid());
+    
     generator.seed(seed); // seed with the current time
 
     mpSerialiser->serialiseHeader(states);
@@ -458,4 +458,9 @@ void MarkovChain::solve(int solver_type)
     {
         solveRKD5();
     }
+}
+
+void MarkovChain::setSeed(double newSeed)
+{
+    seed = newSeed;
 }

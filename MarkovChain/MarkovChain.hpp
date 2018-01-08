@@ -60,6 +60,8 @@ private:
     Serialiser *mpSerialiser;
     bool debug = false;
 
+    unsigned long seed = mix(clock(), time(NULL), getpid());
+
     void solveGillespie();
     using DeterministicStateType = Deterministic::State;
     void derivative(const DeterministicStateType p, DeterministicStateType &dpdt, const double t);
@@ -81,5 +83,6 @@ public:
     void addTransition(Transition *transition);
     void setMaxTime(double newMaxTime);
     void solve(int solver_type);
+    void setSeed(double seed);
 };
 #endif

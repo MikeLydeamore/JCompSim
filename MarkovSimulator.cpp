@@ -5,8 +5,8 @@
 #include "MarkovChain.hpp"
 #include "MarkovChain.cpp"
 #include "MarkovChain/json/ModelJson.cpp"
-#include "Serialiser.hpp"
-#include "Serialiser.cpp"
+#include "MarkovChain/Serialiser.hpp"
+#include "MarkovChain/Serialiser.cpp"
 
 namespace po = boost::program_options;
 using json = nlohmann::json;
@@ -90,7 +90,7 @@ int main(int argc, char *argv[])
     }
     else
     {
-      chain.solve(-1);
+      chain.solve(1);
     }
     return 0;
   }

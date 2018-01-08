@@ -25,3 +25,5 @@ outputs/FullModel/initialcondition.json
 .RData
 .Rhistory
 sirspeedtest
+outputs/FullModel/initialcondition.json
+outputs/SIGS/initialcondition.json
