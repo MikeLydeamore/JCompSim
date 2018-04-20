@@ -2,7 +2,7 @@
     {
         "source_state": "S",
         "destination_state": "I",
-        "parameter": 0.0017,
+        "parameter": 0.017,
         "transition_type": "individual"
     },
     {
