@@ -12,10 +12,19 @@ protected:
   std::string mDestination_state;
   std::vector<std::string> mGoverning_states;
   parameter_map mParameters;
+  std::vector<std::string> mCounters;
 
   double (*mpGetActualRate)(state_values pStates, parameter_map parameters);
 
   int mTransition_type = 0;
+
+  virtual void incrementCounters(state_values, state_values &rStates)
+  {
+    for (std::string counter : mCounters)
+    {
+      rStates[counter] += 1;
+    }
+  }
 
 public:
   
@@ -85,6 +94,12 @@ public:
     mGoverning_states = governing_states;
   }
 
+  virtual void addCounter(std::string counter)
+  {
+    mCounters.push_back(counter);
+  }
+  
+
 };
 
 
@@ -104,6 +119,8 @@ public:
   virtual void do_transition(double t, state_values &rStates) {
     rStates[this->mSource_state] -= 1;
     rStates[this->mDestination_state] += 1;
+
+    incrementCounters(rStates);
   }
 };
 
@@ -129,6 +146,8 @@ public:
   {
     rStates[this->mSource_state] -= 1;
     rStates[this->mDestination_state] += 1;
+
+    incrementCounters(rStates);
   }
 };
 
@@ -143,6 +162,8 @@ public:
   virtual void do_transition(double t, state_values &rStates)
   {
     rStates[this->mSource_state] -= 1;
+
+    incrementCounters(rStates);
   }
 };
 
@@ -162,6 +183,8 @@ public:
   {
     rStates[this->mSource_state] -= 1;
     rStates[this->mDestination_state] += 1;
+
+    incrementCounters(rStates);
   }
 };
 
@@ -175,6 +198,8 @@ public:
   virtual void do_transition(double t, state_values &rStates)
   {
     rStates[this->mDestination_state] += 1;
+
+    incrementCounters(rStates);
   }
 };
 
@@ -188,6 +213,8 @@ public:
   virtual void do_transition(double t, state_values &rStates)
   {
     rStates[this->mSource_state] -= 1;
+
+    incrementCounters(rStates);
   }
 };
 
