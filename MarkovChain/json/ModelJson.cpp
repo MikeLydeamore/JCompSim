@@ -9,6 +9,7 @@ private:
     std::string mSource_state;
     std::string mDestination_state;
     std::vector<std::string> mGoverning_states;
+    std::vector<std::string> mCounters;
 
     double mParameter;
 
@@ -66,6 +67,16 @@ public:
     {
         mTransition_type = transition_type;
     }
+
+    std::vector<std::string> getCounters() const
+    {
+        return (mCounters);
+    }
+
+    void setCounters(std::vector<std::string> counters)
+    {
+        mCounters = counters;
+    }
 };
 
 
@@ -77,13 +88,15 @@ void to_json(json &j, const TransitionJson &transition)
         {"destination_state", transition.getDestinationState()},
         {"transition_type", transition.getTransitionType()},
         {"parameter", transition.getSingleParameter()},
-        {"governing_states", transition.getGoverningStates()}};
+        {"governing_states", transition.getGoverningStates()},
+        {"counters", transition.getCounters()}};
     } else
     {
         j = json{{"source_state", transition.getSourceState()},
         {"destination_state", transition.getDestinationState()},
         {"transition_type", transition.getTransitionType()},
-        {"parameter", transition.getSingleParameter()}};
+        {"parameter", transition.getSingleParameter()},
+        {"counteres", transition.getCounters()}};
     }
   
 }
@@ -95,6 +108,7 @@ void from_json(const json &j, TransitionJson &transition)
   transition.setDestinationState(j.at("destination_state").get<std::string>());
   transition.setTransitionType(j.at("transition_type").get<std::string>());
   transition.setSingleParameter(j.at("parameter").get<double>());
+  transition.setCounters(j.at("counters").get<std::vector<std::string> >());
   
   if (transition.getTransitionType() == "mass-action") {
     transition.setGoverningStates(j.at("governing_states").get<std::vector<std::string> >());
@@ -112,20 +126,39 @@ private:
     {
         if (transition.getTransitionType() == "mass-action")
         {
-            rChain.addTransition(new TransitionMassAction(transition.getSourceState(), 
+            TransitionMassAction* t = new TransitionMassAction(transition.getSourceState(), 
                                                              transition.getDestinationState(),
                                                              transition.getSingleParameter(),
-                                                             transition.getGoverningStates()));
+                                                             transition.getGoverningStates());
+            if (transition.getCounters().size() > 0)
+            {
+                for (std::string counter : transition.getCounters())
+                    t->addCounter(counter);
+            }
+            rChain.addTransition(t);
         } else if (transition.getTransitionType() == "individual")
         {
-            rChain.addTransition(new TransitionIndividual(transition.getSourceState(), 
+            TransitionIndividual* t = new TransitionIndividual(transition.getSourceState(), 
                                                              transition.getDestinationState(),
-                                                             transition.getSingleParameter()));
+                                                             transition.getSingleParameter());
+            
+            if (transition.getCounters().size() > 0)
+            {
+                for (std::string counter : transition.getCounters())
+                    t->addCounter(counter);
+            }
+            rChain.addTransition(t);
         } else if (transition.getTransitionType() == "constant")
         {
-            rChain.addTransition(new TransitionConstant(transition.getSourceState(),
+            TransitionConstant* t = new TransitionConstant(transition.getSourceState(),
                                                            transition.getDestinationState(),
-                                                           transition.getSingleParameter()));
+                                                           transition.getSingleParameter());
+            if (transition.getCounters().size() > 0)
+            {
+                for (std::string counter : transition.getCounters())
+                    t->addCounter(counter);
+            }
+            rChain.addTransition(t);
         }
     }
 
