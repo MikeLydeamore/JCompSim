@@ -1,5 +1,5 @@
 #include <boost/program_options.hpp>
-#include <json.hpp>
+#include <nlohmann/json.hpp>
 #include <iostream>
 #include <fstream>
 #include "MarkovChain.hpp"
